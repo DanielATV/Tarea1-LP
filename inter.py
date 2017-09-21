@@ -3,7 +3,7 @@ import re
 """
 Asignacion de variables
 Declaracion de variables
-Funciones
+Funciones: fn\s(\w*)\((\w*):\s(i16|i32|f64)\)\s->\s(i16|i32|f64){ || 
 Retorno
 Operaciones(+ -)
 Boleanos(< <= > >= =)
