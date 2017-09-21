@@ -9,7 +9,7 @@ Operaciones(+ -)
 Boleanos(< <= > >= =)
 If, else if, else, while
 cast \(([A-z][A-z,0-9]*)\sas\s(i16|i32|f64)\)
-print
+print println!\(([A-z][A-z,0-9]*)\);
 """
 
 """
