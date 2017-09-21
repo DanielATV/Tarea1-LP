@@ -8,7 +8,7 @@ Retorno
 Operaciones(+ -)
 Boleanos(< <= > >= =)
 If, else if, else, while
-cast
+cast \(([A-z][A-z,0-9]*)\sas\s(i16|i32|f64)\)
 print
 """
 
