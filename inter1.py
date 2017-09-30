@@ -68,6 +68,15 @@ def get_val_value(var):
 	else:
 		return Variables[var][0]
 
+"""
+identifier(line) : Busca que es lo que se intenta hacer, por ejemplo, definir una funcion.
+Inputs:
+(string) La linea que se esta leyendo del archivo.
+
+Outputs:
+(string) El match que tuvo.
+"""
+Se
 def identifier(line):
 	if LET in line:
 		return LET
