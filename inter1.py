@@ -1,7 +1,7 @@
 import re
 
-Variables = dict()  # Key -> Variable ; Value -> [valor, tipo] 
-Funciones = dict()  #
+Variables = dict()  # Key -> Variable ; Value -> lista[valor, tipo] 
+Funciones = dict()  # Key -> nombre funcion; Value: lista[tipo variable entrada,tipo variable salida,sentencias]
 In_Fun = False
 In_While = False
 LET = "let mut"
