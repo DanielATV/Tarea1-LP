@@ -20,6 +20,7 @@ If & While
 while_sent = re.compile("while\s(\w*)\s(<|>|=|>=|<=)\s(\w*)\s{")
 if_sent = re.compile("if\s(\w*)\s(<|>|=|>=|<=)\s(\w*)\s{")
 end_while = end_func = end_if = re.compile("}")
+elseif_sent = re.compile("} else if (([A-z]) (<=|>=|>|<|=) ([A-z]+|[0-9]+)) {")
 
 Retornos
 
