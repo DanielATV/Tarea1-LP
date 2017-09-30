@@ -7,18 +7,19 @@ In_While = False
 
 var_val = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\d*)")
 var_var = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)")
+var_func = re.compile("let mut\s(\w*)\s:\s(i16|i32|f64)\s=\s(\w*)\((\d)\);")
 op_sc = re.compile("(\w*|\d*)\s*(\+|\-)\s(\w*|\d*)")
 op_cd = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)")
 op_ci = re.compile("(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\)")
 cast = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)")
 while_sent = re.compile("while\s(\w*)\s(<|>|=|>=|<=)\s(\w*)\s{")
-end_while = re.compile("}")
 if_sent = re.compile("if\s(\w*)\s(<|>|=|>=|<=)\s(\w*)\s{")
-enf_if = re.compile("}")
+end_while = end_func = end_if = re.compile("}")
 retorno_var_val = re.compile("return\s(\w*);")
 retorno_opsc = re.compile("return\s((\w*|\d*)\s*(\+|\-)\s(\w*|\d*));")
 retorno_cd = re.compile("return\s(\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*));")
 retorno_ci = re.compile("return\s(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
+func = re.compile("fn\s(\w*)\((\w):\s(i16|i32|f64)\)\s->\s(i16|i32|f64){")
 
 """
 Nombre variable: [A-z]+
