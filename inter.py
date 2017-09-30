@@ -8,7 +8,7 @@ Declaracion de variables
     Variable -> Valor : let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\d*);
     Variable -> Variable : let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*);
 Funciones: fn ([A-z]+)\(([A-z]+): (i16|i32|f64)\) -> (i16|i32|f64){
-Funcion main: 
+Funcion main: fn ([A-z]+)\(\) {
 Retorno: println!\([A-z]+\);
 Operaciones: [A-z]+|[0-9]+|\(([A-z]+) as (i16|i32|f64)\) +|- [A-z]+|[0-9]+|\(([A-z]+) as (i16|i32|f64)\)
 *****
