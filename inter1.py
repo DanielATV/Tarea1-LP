@@ -68,6 +68,19 @@ def get_val_value(var):
 	else:
 		return Variables[var][0]
 
+def compar_types(var1,var2): ###
+	if var1 not in Variables.keys() or var2 not in Variables.keys():
+		return False
+	if get_val_type(var1) == get_val_type(var2):
+		return True
+	else:
+		return False
+
+def cast(var,tipo): ###
+	if var not in Variables.keys():
+		return False
+	Variables[var][1] = tipo
+
 """
 identifier(line) : Busca que es lo que se intenta hacer, por ejemplo, definir una funcion.
 Inputs:
