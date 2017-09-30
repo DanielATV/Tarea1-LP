@@ -1,5 +1,18 @@
 import re
 
+Variables = dict()  # Key -> Variable ; Value -> [valor, tipo] 
+Funciones = dict()  #
+In_Fun = False
+In_While = False
+LET = "let mut"
+WHILE = "while"
+IF = "if"
+ELSE = "else"
+RETURN = "return"
+FN = "fn"
+END = "}"
+PRINT = "println!"
+
 #Declaracion de variables
 
 var_val = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\d*)")
@@ -40,9 +53,46 @@ func = re.compile("fn\s(\w*)\((\w):\s(i16|i32|f64)\)\s->\s(i16|i32|f64){")
 
 println = re.compile("println!\((\w+)\);")
 
+def up_val(var,valor,tipo):
+	Variables[var] = [valor,tipo]
+
+def get_val_type(var):
+	if var not in Variables.keys():
+		return None
+	else:
+		return Variables[var][1]
+
+def get_val_value(var):
+	if var not in Variables.keys():
+		return None
+	else:
+		return Variables[var][0]
+
+def identifier(line):
+	if LET in line:
+		return LET
+	elif WHILE in line:
+		return WHILE
+	elif IF in line:
+		return IF
+	elif ELSE in line:
+		return ELSE
+	elif RETURN in line:
+		return RETURN
+	elif FN in line:
+		return FN
+	elif END in line:
+		return END
+	elif PRINT in line:
+		return PRINT
+	else:
+		return "Statment"
+
 
 file = open("codigo_rust.txt", "r")
 
 for line in file:
 	line = line.strip("\n")
 	if len(line)==1 and line != "}":
+		a = identifier(line)
+		print a
