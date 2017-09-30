@@ -30,7 +30,7 @@ Declaracion de variables
 Funciones: fn ([A-z]+)\(([A-z]+): (i16|i32|f64)\) -> (i16|i32|f64){
 Funcion main: fn ([A-z]+)\(\) {
 Retorno: println!\([A-z]+\);
-Operaciones(+ -)
+Operaciones: [A-z]+|[0-9]+|\(([A-z]+) as (i16|i32|f64)\) +|- [A-z]+|[0-9]+|\(([A-z]+) as (i16|i32|f64)\) 
     +/- sin cast -> (\w*|\d*)\s*(\+|\-)\s(\w*|\d*)
     +/- con cast -> \((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*) <- cast por la derecha
     +/- con cast -> (\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\) <- cast por la izquierda
