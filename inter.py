@@ -11,6 +11,9 @@ var_func = re.compile("let mut\s(\w*)\s:\s(i16|i32|f64)\s=\s(\w*)\((\d)\);")
 op_sc = re.compile("(\w*|\d*)\s*(\+|\-)\s(\w*|\d*)")
 op_cd = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)")
 op_ci = re.compile("(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\)")
+"""
+Operanciones combinadas: ([A-z]+|[0-9]+|\(([A-z]+) as (i16|i32|f64)\)) (\+|-) ([A-z]+|[0-9]+|\(([A-z]+) as (i16|i32|f64)\))
+"""
 cast = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)")
 while_sent = re.compile("while\s(\w*)\s(<|>|=|>=|<=)\s(\w*)\s{")
 if_sent = re.compile("if\s(\w*)\s(<|>|=|>=|<=)\s(\w*)\s{")
