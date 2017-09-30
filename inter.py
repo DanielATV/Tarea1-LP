@@ -9,10 +9,12 @@ Declaracion de variables
     Variable -> Variable : let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*);
 Funciones: fn\s(\w*)\((\w*):\s(i16|i32|f64)\)\s->\s(i16|i32|f64){ || 
 Retorno: println!\([A-z]+\);
-Operaciones(+ -)
+Operaciones: [A-z]+|[0-9]+|\(([A-z]+) as (i16|i32|f64)\) +|- [A-z]+|[0-9]+|\(([A-z]+) as (i16|i32|f64)\)
+*****
     +/- sin cast -> (\w*|\d*)\s*(\+|\-)\s(\w*|\d*)
     +/- con cast -> \((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*) <- cast por la derecha
     +/- con cast -> (\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\) <- cast por la izquierda
+*****   
 Boleanos(< <= > >= =)
 If, else if, else, while
 Cast: \(([A-z]+) as (i16|i32|f64)\)
