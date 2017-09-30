@@ -16,7 +16,7 @@ Operaciones(+ -)
 Boleanos(< <= > >= =)
 If, else if, else, while
 Cast: \(([A-z]+) as (i16|i32|f64)\)
-print println!\(([A-z][A-z,0-9]*)\);
+Print: println!\(([A-z][A-z,0-9]*)\);
 """
 
 """
