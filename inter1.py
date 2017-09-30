@@ -76,7 +76,6 @@ Inputs:
 Outputs:
 (string) El match que tuvo.
 """
-Se
 def identifier(line):
 	if LET in line:
 		return LET
