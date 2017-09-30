@@ -94,5 +94,6 @@ file = open("codigo_rust.txt", "r")
 for line in file:
 	line = line.strip("\n")
 	if len(line)==1 and line != "}":
-		a = identifier(line)
-		print a
+		continue
+	a = identifier(line)
+	print a
