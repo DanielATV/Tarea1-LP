@@ -2,6 +2,7 @@ import re
 
 """
 Nombre variable: [A-z]+
+Valores: [0-9]+
 Asignacion de variables
 Declaracion de variables
     Variable -> Valor : let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\d*);
