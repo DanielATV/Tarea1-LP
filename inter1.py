@@ -113,8 +113,10 @@ def identifier(line):
 
 file = open("codigo_rust.txt", "r")
 
-for line in file:
-	line = line.strip("\n")
+while True:
+	line = file.readline().strip("\n")
+	if line == "":
+		break
 	if len(line)==1 and line != "}":
 		continue
 	identificador = identifier(line)
@@ -128,6 +130,11 @@ for line in file:
 		resultado = var_val.search(line)
 		if resultado:
 			Variables[resultado.group(1)] = [resultado.group(2),resultado.group(3)]
+		else:
+			print "declaracion"
+	elif identificador == IF:
+		print "if"
 print Variables["a"]
 print Variables["b"]
 print Variables["c"]
+
