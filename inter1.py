@@ -119,6 +119,15 @@ def leedor_if():
 		i += 1
 	print i
 
+def leedor_while():
+	i = 0
+	while True:
+		line = file.readline().strip("\n")
+		if end_while.search(line) and len(line) == 2:
+			break
+		i += 1
+	print i
+
 file = open("codigo_rust.txt", "r")
 
 while True:
@@ -143,4 +152,6 @@ while True:
 	elif identificador == IF:
 		if if_sent.search(line):
 			leedor_if()
-
+	elif identificador == WHILE:
+		if while_sent.search(line):
+			leedor_while()
