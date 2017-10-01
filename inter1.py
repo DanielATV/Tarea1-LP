@@ -110,6 +110,14 @@ def identifier(line):
 	else:
 		return "Statment"
 
+def leedor_if():
+	i = 0
+	while True:
+		line = file.readline().strip("\n")
+		if end_if.search(line) and len(line) == 2:
+			break
+		i += 1
+	print i
 
 file = open("codigo_rust.txt", "r")
 
@@ -133,8 +141,6 @@ while True:
 		else:
 			print "declaracion"
 	elif identificador == IF:
-		print "if"
-print Variables["a"]
-print Variables["b"]
-print Variables["c"]
+		if if_sent.search(line):
+			leedor_if()
 
