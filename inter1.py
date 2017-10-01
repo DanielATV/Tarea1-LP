@@ -1,6 +1,6 @@
 import re
 
-Variables = dict()  # Key -> Variable ; Value -> lista[valor, tipo] 
+Variables = dict()  # Key -> nombre variable ; Value -> lista[tipo, valor] 
 Funciones = dict()  # Key -> nombre funcion; Value: lista[tipo variable entrada,tipo variable salida,sentencias]
 In_Fun = False
 In_While = False
@@ -117,13 +117,17 @@ for line in file:
 	line = line.strip("\n")
 	if len(line)==1 and line != "}":
 		continue
-	a = identifier(line)
-	if a == FN:
+	identificador = identifier(line)
+	if identificador == FN:
 		if fun_main.search(line):
 			print "main"
 			continue
 		else:
 			print "funcion"
-	elif a == LET:
-		print "asdfaf"
-
+	elif identificador == LET:
+		resultado = var_val.search(line)
+		if resultado:
+			Variables[resultado.group(1)] = [resultado.group(2),resultado.group(3)]
+print Variables["a"]
+print Variables["b"]
+print Variables["c"]
