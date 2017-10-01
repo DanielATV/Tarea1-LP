@@ -48,7 +48,7 @@ retorno_cd = re.compile("return\s(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\)
 #Funciones
 
 func = re.compile("fn\s(\w*)\((\w):\s(i16|i32|f64)\)\s->\s(i16|i32|f64){")
-fun_main = re.compile(r"fn\smain\s\(\)\s{")
+fun_main = re.compile(r"fn\smain\(\)\s{")
 
 #Print
 
