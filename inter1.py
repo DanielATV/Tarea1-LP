@@ -118,4 +118,12 @@ for line in file:
 	if len(line)==1 and line != "}":
 		continue
 	a = identifier(line)
-	print a
+	if a == FN:
+		if fun_main.search(line):
+			print "main"
+			continue
+		else:
+			print "funcion"
+	elif a == LET:
+		print "asdfaf"
+
