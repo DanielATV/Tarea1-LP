@@ -54,6 +54,32 @@ fun_main = re.compile(r"fn\smain\(\)\s{")
 
 println = re.compile("println!\((\w+)\);")
 
+def bool(obj):
+	var = obj.group(1)
+	cond = obj.group(2)
+	var2 = obj.group(3)
+	if var2.isdigit():
+		var = get_val_value(var)
+	else:
+		var = get_val_value(var)
+		var2 = get_val_value(var2)
+		if compar_types(var,var2) == False:
+			print "Error de tipos"
+			break
+	if cond == "<":
+		return var < var2
+	elif cond == ">":
+		return var > var2
+	elif cond == "=":
+		return var == var2
+	elif cond == ">=":
+		return var >= var2
+	elif cond == "<=":
+		return var <= var2
+	else:
+		print "Error de Sintaxis"
+		break
+
 def up_val(var,valor,tipo):
 	Variables[var] = [valor,tipo]
 
