@@ -10,6 +10,7 @@ IF = "if"
 ELSE = "else"
 RETURN = "return"
 FN = "fn"
+SENT = ";"
 END = "}"
 PRINT = "println!"
 
@@ -29,6 +30,16 @@ op_sc = re.compile("(\w*|\d*)\s*(\+|\-)\s(\w*|\d*)")
 op_cd = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)")
 op_ci = re.compile("(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\)")
 cast = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)")
+
+#Sentencias
+
+sent_val = re.compile("(\w*)\s*=\s*(\w*);")
+sent_var = re.compile("(\w*)\s*=\s*(\w*);")
+sent_func = re.compile("(\w*)+\s*=\s*(\w*)+\((\w*)+\)\s*;")
+sent_op = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)+\s*\s*(\w*);")
+sent_op_cast = re.compile("(\w*)\s*=\s*\((\w*)\sas\s(i16|i32|f64)\);")
+sent_op_valcasti = re.compile("(\w*)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)\s*;")
+sent_op_valcastd = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
 
 #If & While
 
@@ -65,7 +76,7 @@ def bool(obj):
 		var2 = get_val_value(var2)
 		if compar_types(var,var2) == False:
 			print "Error de tipos"
-			break
+			return False
 	if cond == "<":
 		return var < var2
 	elif cond == ">":
@@ -78,7 +89,158 @@ def bool(obj):
 		return var <= var2
 	else:
 		print "Error de Sintaxis"
-		break
+		return False
+
+def sentence(line): # Falta la funcion en una sentencia
+	obj = sent_op.match(line)
+	if (obj):
+		if obj.group(1) in Variables.keys():
+			var = obj.group(2)
+			op = obj.group(3)
+			var2 = obj.group(4)
+			if var.isdigit() and var2.isdigit():
+				if op == "+":
+					Variables[obj.group(1)][0] = str(int(var) + int(var2))
+					return True
+				elif op == "-":
+					Variables[obj.group(1)][0] = str(int(var) - int(var2))
+					return True
+			elif var.isdigit():
+				if not compar_types(obj.group(1),var2):
+					print("Error de tipos")
+					return False
+				var2 = get_val_value(var2)
+				if op == "+":
+					Variables[obj.group(1)][0] = str(int(var) + var2)
+					return True
+				else:
+					Variables[obj.group(1)][0] = str(int(var) - var2)
+					return True
+			elif var2.isdigit():
+				if compar_types(obj.group(1),var):
+					pass
+				else:
+					print("Error de tipos")
+					return False
+				var = get_val_value(var)
+				if op == "+":
+					Variables[obj.group(1)][0] = str(var + int(var2))
+					return True
+				else:
+					Variables[obj.group(1)][0] = str(var - int(var2))
+					return True
+			else:
+				if not compar_types(var,var2):
+					print("Error de tipos")
+					return False
+				if not compar_types(obj.group(1),var):
+					print("Error de tipos")
+					return False
+				var = get_val_value(var)
+				var2 = get_val_value(var2)
+				if op == "+":
+					Variables[obj.group(1)][0] = str(var + var2)
+					return True
+				else:
+					Variables[obj.group(1)][0] = str(var - var2)
+					return True
+		else:
+			print("Variable "+obj.group(1)+" no declarada")
+			return False
+
+	obj = sent_func.match(line)
+
+	if (obj):# Falta La funcion que ejecuta las funciones para llamarla aca
+		pass 
+
+	obj = sent_var.match(line)
+	if (obj):
+		var = obj.group(1)
+		var2 = obj.group(2)
+		if var in Variables.keys() and var2 in Variables.keys():
+			if compar_types(var,var2):
+				Variables[var][0] = get_val_value(var2)
+			else:
+				print("Error de Tipo")
+				return False
+		else:
+			print("Variable o variables no definidas")
+	
+	obj = sent_val.match(line)
+	if (obj):
+		var = obj.group(1)
+		val = obj.group(2)
+		if var not in Variables.keys():
+			print("Variable "+var+" no definida")
+			return False
+		Variables[var] = int(val)
+		return True
+	
+	obj = sent_op_cast.match(line)
+	if (obj):
+		var = obj.group(1)
+		var2 = obj.group(2)
+		cast = obj.group(3)
+		if var not in Variables.keys():
+			print("Variable "+var+" no definida")
+			return False
+		if cast == Variables[var][1]:
+			Variables[var][0] = var2
+		else:
+			print("Error de Tipo")
+			return False
+
+	obj = sent_op_valcastd.match(line)
+	if (obj):
+		var = obj.group(1)
+		var2 = obj.group(2)
+		op = obj.group(3)
+		var3 = obj.group(4)
+		cast = obj.group(5)
+		if var2.isdigit():
+			if cast == Variables[var][1]:
+				if op == "+":
+					Variables[var][0] = str(int(Variables[var3][0]) + int(var2))
+					return True
+				else:
+					Variables[var][0] = str(int(var2) - int(var3))
+					return True
+		if cast == Variables[var2][1] and cast == Variables[var][1]:
+			if op == "+":
+				Variables[var][0] = str(int(Variables[var3][0]) + int(Variables[var2][0]))
+				return True
+			else:
+				Variables[var][0] = str(int(Variables[var2][0]) - int(var3))
+				return True
+		else:
+			print("Error de Tipo")
+			return False
+
+	obj = sent_op_valcasti.match(line)
+	if (obj):
+		var = obj.group(1)
+		var2 = obj.group(2)
+		cast = obj.group(3)
+		op = obj.group(4)
+		var3 = obj.group(5)
+		if var3.isdigit():
+			if cast == Variables[var][1]:
+				if op == "+":
+					Variables[var][0] = str(int(Variables[var2][0]) + int(var3))
+					return True
+				else:
+					Variables[var][0] = str(int(Variables[var2][0]) - int(var3))
+					return True
+		if cast == Variables[var][1]:
+			if op == "+":
+				Variables[var][0] = str(int(Variables[var3][0]) + int(Variables[var2][0]))
+				return True
+			else:
+				Variables[var][0] = str(int(Variables[var2][0]) - int(Variables[var3][0]))
+				return True
+		else:
+			print("Error de Tipo")
+			return False
 
 def up_val(var,valor,tipo):
 	Variables[var] = [valor,tipo]
@@ -96,12 +258,20 @@ def get_val_value(var):
 		return Variables[var][0]
 
 def compar_types(var1,var2): ###
-	if var1 not in Variables.keys() or var2 not in Variables.keys():
-		return False
-	if get_val_type(var1) == get_val_type(var2):
+	if Variables[var1][1] == Variables[var2][1]:
 		return True
 	else:
 		return False
+
+def declaration(line): # En Desarrollo
+	obj = var_val.match(line)
+	if(obj):
+		up_val(obj.group(1),obj.group(3),obj.group(2))
+		return True
+	obj = var_var.match(line)
+	if(obj):
+		up_val(obj.group(1),obj.group(3),obj.group(2))
+		return True
 
 def cast(var,tipo): ###
 	if var not in Variables.keys():
@@ -134,7 +304,7 @@ def identifier(line):
 	elif PRINT in line:
 		return PRINT
 	else:
-		return "Statment"
+		return SENT
 
 def leedor_if():
 	i = 0
@@ -156,7 +326,7 @@ def leedor_while():
 
 file = open("codigo_rust.txt", "r")
 
-while True:
+while True: # Considerar hacer un strip "\t" las tabulaciones pueden generar error en los compile
 	line = file.readline().strip("\n")
 	if line == "":
 		break
