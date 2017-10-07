@@ -1,4 +1,7 @@
 import re
+import operator
+
+ops= {"+": operator.add, "-": operator.sub} # ops["+"](1,1) = 1 + 1 
 
 Variables = dict()  # Key -> nombre variable ; Value -> lista[tipo, valor] 
 Funciones = dict()  # Key -> nombre funcion; Value: lista[tipo variable entrada,tipo variable salida,sentencias]
@@ -16,17 +19,17 @@ PRINT = "println!"
 
 #Declaracion de variables
 
-var_val = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([0-9]+)")
-var_var = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([A-z]+)")
+var_val = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([0-9]+);")
+var_var = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([A-z]+);")
 var_func = re.compile("let mut\s(\w*)\s:\s(i16|i32|f64)\s=\s(\w*)\((\d)\);")
-var_op = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s*(\w);")
+var_op = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([0-9]+)\s*(\+|\-)\s*([0-9]+);")
 var_op_cast_cast = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)")
 var_op_valcasti = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s(\w*)")
 var_op_valcastd = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\)")
 
 #Operaciones y Cast
 
-op_sc = re.compile("(\w*|\d*)\s*(\+|\-)\s(\w*|\d*)")
+op_sc = re.compile("(\w+|\d+)\s*(\+|\-)\s(\w+|\d+)")
 op_cd = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)")
 op_ci = re.compile("(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\)")
 cast = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)")
@@ -266,19 +269,23 @@ def compar_types(var1,var2): ###
 def declaration(line): # En Desarrollo
 	obj = var_val.search(line)
 	if(obj):
-		print obj.groups()
+		print "variable valor"
 		up_val(obj.group(1),obj.group(3),obj.group(2))
 		return True
 	obj = var_var.search(line)
 	if(obj):
-		print obj.groups()
 		lista = Variables[obj.group(3)]
 		if obj.group(2) == lista[1]:
 			print "tipo compatible"
 			up_val(obj.group(1),lista[0],obj.group(2))
 		else:
 			print "Error de tipo"#falta hacer que termine el programa
+			return False
 		return True
+	obj = var_op.search(line)
+	if obj:
+		print obj.groups()
+
 
 def cast(var,tipo): ###
 	if var not in Variables.keys():
@@ -378,14 +385,7 @@ while True: # Considerar hacer un strip "\t" las tabulaciones pueden generar err
 	elif identificador == LET:
 		print "declarar"
 		declaration(line)
-		'''
-		resultado = var_val.search(line)#agregar la funcion declarar
-		print resultado.groups()
-		if resultado:
-			Variables[resultado.group(1)] = [resultado.group(2),resultado.group(3)]
-		else:
-			print "declaracion"
-		'''
+
 	elif identificador == IF:
 		print "if"
 		if if_sent.search(line):
@@ -394,6 +394,3 @@ while True: # Considerar hacer un strip "\t" las tabulaciones pueden generar err
 		print "while"
 		if while_sent.search(line):
 			leedor_while()
- 
-print Variables["a"]
-print Variables["b"]
