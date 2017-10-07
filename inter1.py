@@ -39,7 +39,7 @@ cast = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)")
 sent_val = re.compile("(\w*)\s*=\s*(\w*);")
 sent_var = re.compile("(\w*)\s*=\s*(\w*);")
 sent_func = re.compile("(\w*)+\s*=\s*(\w*)+\((\w*)+\)\s*;")
-sent_op = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)+\s*\s*(\w*);")
+sent_op = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)+\s*(\w*);")
 sent_op_cast = re.compile("(\w*)\s*=\s*\((\w*)\sas\s(i16|i32|f64)\);")
 sent_op_valcasti = re.compile("(\w*)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)\s*;")
 sent_op_valcastd = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
@@ -285,6 +285,8 @@ def declaration(line): # En Desarrollo
 	obj = var_op.search(line)
 	if obj:
 		print obj.groups()
+		valor = ops[obj.group(4)](int(obj.group(3)),int(obj.group(5)))
+		up_val(obj.group(1),valor,obj.group(2))
 
 
 def cast(var,tipo): ###
