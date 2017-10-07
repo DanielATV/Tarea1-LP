@@ -16,8 +16,8 @@ PRINT = "println!"
 
 #Declaracion de variables
 
-var_val = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\d*)")
-var_var = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)")
+var_val = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([0-9]+)")
+var_var = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([A-z]+)")
 var_func = re.compile("let mut\s(\w*)\s:\s(i16|i32|f64)\s=\s(\w*)\((\d)\);")
 var_op = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s*(\w);")
 var_op_cast_cast = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)")
@@ -43,7 +43,7 @@ sent_op_valcastd = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16
 
 #If & While
 
-while_sent = re.compile("while\s(\w*)\s(<=|>=|>|<|=)\s(\w*)\s{")
+while_sent = re.compile(r"while\s(\w*)\s(<=|>=|>|<|=)\s(\w*){")
 if_sent = re.compile("if\s(\w*)\s(<=|>=|>|<|=)\s(\w*)\s{")
 end_while = end_func = end_if = re.compile("}")
 elseif_sent = re.compile("} else if (([A-z]) (<=|>=|>|<|=) ([A-z]+|[0-9]+)) {")
@@ -264,19 +264,26 @@ def compar_types(var1,var2): ###
 		return False
 
 def declaration(line): # En Desarrollo
-	obj = var_val.match(line)
+	obj = var_val.search(line)
 	if(obj):
+		print obj.groups()
 		up_val(obj.group(1),obj.group(3),obj.group(2))
 		return True
-	obj = var_var.match(line)
+	obj = var_var.search(line)
 	if(obj):
-		up_val(obj.group(1),obj.group(3),obj.group(2))
+		print obj.groups()
+		lista = Variables[obj.group(3)]
+		if obj.group(2) == lista[1]:
+			print "tipo compatible"
+			up_val(obj.group(1),lista[0],obj.group(2))
 		return True
 
 def cast(var,tipo): ###
 	if var not in Variables.keys():
 		return False
 	Variables[var][1] = tipo
+
+
 
 """
 identifier(line) : Busca que es lo que se intenta hacer, por ejemplo, definir una funcion.
@@ -312,6 +319,22 @@ def leedor_if():
 		line = file.readline().strip("\n")
 		if end_if.search(line) and len(line) == 2:
 			break
+		elif elseif_sent.search(line):#falta probarlo
+			print "else if"
+		elif else_sent.search(line):
+			print "else"
+		'''
+		elif declarar
+		elif asginar
+		elif operaciones
+		elif pr1nt
+		elif funcion
+		elif retorn
+		elif while
+		elif if
+		'''
+
+
 		i += 1
 	print i
 
@@ -321,10 +344,21 @@ def leedor_while():
 		line = file.readline().strip("\n")
 		if end_while.search(line) and len(line) == 2:
 			break
+
+		'''
+		elif declarar
+		elif asginar
+		elif operaciones
+		elif pr1nt
+		elif funcion
+		elif retorn
+		elif while
+		elif if
+		''' 
 		i += 1
 	print i
 
-file = open("codigo_rust.txt", "r")
+file = open("codigo_rust1.txt", "r")
 
 while True: # Considerar hacer un strip "\t" las tabulaciones pueden generar error en los compile
 	line = file.readline().strip("\n")
@@ -340,14 +374,24 @@ while True: # Considerar hacer un strip "\t" las tabulaciones pueden generar err
 		else:
 			print "funcion"
 	elif identificador == LET:
-		resultado = var_val.search(line)
+		print "declarar"
+		declaration(line)
+		'''
+		resultado = var_val.search(line)#agregar la funcion declarar
+		print resultado.groups()
 		if resultado:
 			Variables[resultado.group(1)] = [resultado.group(2),resultado.group(3)]
 		else:
 			print "declaracion"
+		'''
 	elif identificador == IF:
+		print "if"
 		if if_sent.search(line):
 			leedor_if()
 	elif identificador == WHILE:
+		print "while"
 		if while_sent.search(line):
 			leedor_while()
+ 
+print Variables["a"]
+print Variables["b"]
