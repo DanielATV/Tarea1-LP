@@ -269,14 +269,12 @@ def compar_types(var1,var2): ###
 def declaration(line): # En Desarrollo
 	obj = var_val.search(line)
 	if(obj):
-		print "variable valor"
 		up_val(obj.group(1),obj.group(3),obj.group(2))
 		return True
 	obj = var_var.search(line)
 	if(obj):
 		lista = Variables[obj.group(3)]
 		if obj.group(2) == lista[1]:
-			print "tipo compatible"
 			up_val(obj.group(1),lista[0],obj.group(2))
 		else:
 			print "Error de tipo"#falta hacer que termine el programa
@@ -284,48 +282,48 @@ def declaration(line): # En Desarrollo
 		return True
 	obj = var_op.search(line)
 	if obj:
-		print obj.groups()
-		valor = ops[obj.group(4)](int(obj.group(3)),int(obj.group(5)))
-		up_val(obj.group(1),valor,obj.group(2))
+		print "operacion"
+		if compar_types(obj.group(3),obj.group(5)):
+			if get_val_type(obj.group(3)) == ("i32" or "i16"):
+				valor = ops[obj.group(4)](int(obj.group(3)),int(obj.group(5)))
+				up_val(obj.group(1),valor,obj.group(2))
+			else:
+				valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
+				up_val(obj.group(1),valor,obj.group(2))
+
+		else:
+			print "Error de tipo"
+
+	obj = var_op_cast_cast.search(line)
+	if obj:
+
+		cast(obj.group(3),obj.group(4))
+		cast(obj.group(6),obj.group(7))
+		
+
+		if compar_types(obj.group(3),obj.group(6)):
+
+		
+			if get_val_type(obj.group(3)) == ("i32" or "i16"):
+
+				valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3)))),int(float(get_val_value(obj.group(6)))))
+				up_val(obj.group(1),valor,obj.group(2))
+		
+			else:
+				valor = ops[obj.group(5)](float(get_val_value(obj.group(3))),float(get_val_value(obj.group(6))))
+				up_val(obj.group(1),valor,obj.group(2))
+		else:
+			print "Error Tipo"
+		
+	obj = var_op_valcasti.search(line)
+	obj = var_op.search(line)
+
 
 
 def cast(var,tipo): ###
 	if var not in Variables.keys():
 		return False
 	Variables[var][1] = tipo
-
-def println(line):
-	obj = print_ln.match(line)
-	var = obj.group(1)
-	type_var = Variables[var][1]
-	print("El valor es: "+var+". Su tipo es: "+type_var)
-
-def store_fun(line,fp):
-	obj = func_main.match(line)
-	if obj:
-		return False
-	obj = func.match(line)
-	print(line)
-	print(obj)
-	name_func = obj.group(1)
-	var_func = obj.group(2)
-	type_in = obj.group(3)
-	type_out = obj.group(4)
-	llaves_abiertas = 1
-	Funciones[name_func] = [(var_func,type_in,type_out)]
-	print(Funciones)
-	for line in fp:
-		line = line.strip("\n")
-		line = line.strip("\t")
-		a = identifier(line)
-		if llaves_abiertas == 0:
-			break
-		elif "{" in line:
-			llaves_abiertas = llaves_abiertas + 1
-		elif a == END:
-			llaves_abiertas = llaves_abiertas - 1
-		Funciones[name_func].append(line)
-	return True
 
 
 
@@ -413,12 +411,11 @@ while True: # Considerar hacer un strip "\t" las tabulaciones pueden generar err
 	identificador = identifier(line)
 	if identificador == FN:
 		if fun_main.search(line):
-			print "main"
 			continue
 		else:
 			print "funcion"
 	elif identificador == LET:
-		print "declarar"
+
 		declaration(line)
 
 	elif identificador == IF:
@@ -429,3 +426,5 @@ while True: # Considerar hacer un strip "\t" las tabulaciones pueden generar err
 		print "while"
 		if while_sent.search(line):
 			leedor_while()
+
+print Variables
