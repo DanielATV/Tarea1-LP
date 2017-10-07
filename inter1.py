@@ -294,6 +294,12 @@ def cast(var,tipo): ###
 		return False
 	Variables[var][1] = tipo
 
+def println(line):
+	obj = print_ln.match(line)
+	var = obj.group(1)
+	type_var = Variables[var][1]
+	print("El valor es: "+var+". Su tipo es: "+type_var)
+
 
 
 """
