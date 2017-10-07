@@ -276,6 +276,8 @@ def declaration(line): # En Desarrollo
 		if obj.group(2) == lista[1]:
 			print "tipo compatible"
 			up_val(obj.group(1),lista[0],obj.group(2))
+		else:
+			print "Error de tipo"#falta hacer que termine el programa
 		return True
 
 def cast(var,tipo): ###
