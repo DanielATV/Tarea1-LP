@@ -94,19 +94,19 @@ def bool(obj):
 		print "Error de Sintaxis"
 		return False
 
-def sentence(line): # Falta la funcion en una sentencia
+def sentence(line,VARS):
 	obj = sent_op.match(line)
 	if (obj):
-		if obj.group(1) in Variables.keys():
+		if obj.group(1) in VARS.keys():
 			var = obj.group(2)
 			op = obj.group(3)
 			var2 = obj.group(4)
 			if var.isdigit() and var2.isdigit():
 				if op == "+":
-					Variables[obj.group(1)][0] = str(int(var) + int(var2))
+					VARS[obj.group(1)][0] = str(int(var) + int(var2))
 					return True
 				elif op == "-":
-					Variables[obj.group(1)][0] = str(int(var) - int(var2))
+					VARS[obj.group(1)][0] = str(int(var) - int(var2))
 					return True
 			elif var.isdigit():
 				if not compar_types(obj.group(1),var2):
@@ -114,10 +114,10 @@ def sentence(line): # Falta la funcion en una sentencia
 					return False
 				var2 = get_val_value(var2)
 				if op == "+":
-					Variables[obj.group(1)][0] = str(int(var) + var2)
+					VARS[obj.group(1)][0] = str(int(var) + var2)
 					return True
 				else:
-					Variables[obj.group(1)][0] = str(int(var) - var2)
+					VARS[obj.group(1)][0] = str(int(var) - var2)
 					return True
 			elif var2.isdigit():
 				if compar_types(obj.group(1),var):
@@ -127,10 +127,10 @@ def sentence(line): # Falta la funcion en una sentencia
 					return False
 				var = get_val_value(var)
 				if op == "+":
-					Variables[obj.group(1)][0] = str(var + int(var2))
+					VARS[obj.group(1)][0] = str(var + int(var2))
 					return True
 				else:
-					Variables[obj.group(1)][0] = str(var - int(var2))
+					VARS[obj.group(1)][0] = str(var - int(var2))
 					return True
 			else:
 				if not compar_types(var,var2):
@@ -142,10 +142,10 @@ def sentence(line): # Falta la funcion en una sentencia
 				var = get_val_value(var)
 				var2 = get_val_value(var2)
 				if op == "+":
-					Variables[obj.group(1)][0] = str(var + var2)
+					VARS[obj.group(1)][0] = str(var + var2)
 					return True
 				else:
-					Variables[obj.group(1)][0] = str(var - var2)
+					VARS[obj.group(1)][0] = str(var - var2)
 					return True
 		else:
 			print("Variable "+obj.group(1)+" no declarada")
@@ -160,9 +160,9 @@ def sentence(line): # Falta la funcion en una sentencia
 	if (obj):
 		var = obj.group(1)
 		var2 = obj.group(2)
-		if var in Variables.keys() and var2 in Variables.keys():
+		if var in VARS.keys() and var2 in VARS.keys():
 			if compar_types(var,var2):
-				Variables[var][0] = get_val_value(var2)
+				VARS[var][0] = get_val_value(var2)
 			else:
 				print("Error de Tipo")
 				return False
@@ -173,10 +173,10 @@ def sentence(line): # Falta la funcion en una sentencia
 	if (obj):
 		var = obj.group(1)
 		val = obj.group(2)
-		if var not in Variables.keys():
+		if var not in VARS.keys():
 			print("Variable "+var+" no definida")
 			return False
-		Variables[var] = int(val)
+		VARS[var] = int(val)
 		return True
 	
 	obj = sent_op_cast.match(line)
@@ -184,11 +184,11 @@ def sentence(line): # Falta la funcion en una sentencia
 		var = obj.group(1)
 		var2 = obj.group(2)
 		cast = obj.group(3)
-		if var not in Variables.keys():
+		if var not in VARS.keys():
 			print("Variable "+var+" no definida")
 			return False
-		if cast == Variables[var][1]:
-			Variables[var][0] = var2
+		if cast == VARS[var][1]:
+			VARS[var][0] = var2
 		else:
 			print("Error de Tipo")
 			return False
@@ -201,19 +201,19 @@ def sentence(line): # Falta la funcion en una sentencia
 		var3 = obj.group(4)
 		cast = obj.group(5)
 		if var2.isdigit():
-			if cast == Variables[var][1]:
+			if cast == VARS[var][1]:
 				if op == "+":
-					Variables[var][0] = str(int(Variables[var3][0]) + int(var2))
+					VARS[var][0] = str(int(VARS[var3][0]) + int(var2))
 					return True
 				else:
-					Variables[var][0] = str(int(var2) - int(var3))
+					VARS[var][0] = str(int(var2) - int(var3))
 					return True
-		if cast == Variables[var2][1] and cast == Variables[var][1]:
+		if cast == VARS[var2][1] and cast == VARS[var][1]:
 			if op == "+":
-				Variables[var][0] = str(int(Variables[var3][0]) + int(Variables[var2][0]))
+				VARS[var][0] = str(int(VARS[var3][0]) + int(VARS[var2][0]))
 				return True
 			else:
-				Variables[var][0] = str(int(Variables[var2][0]) - int(var3))
+				VARS[var][0] = str(int(VARS[var2][0]) - int(var3))
 				return True
 		else:
 			print("Error de Tipo")
@@ -227,19 +227,19 @@ def sentence(line): # Falta la funcion en una sentencia
 		op = obj.group(4)
 		var3 = obj.group(5)
 		if var3.isdigit():
-			if cast == Variables[var][1]:
+			if cast == VARS[var][1]:
 				if op == "+":
-					Variables[var][0] = str(int(Variables[var2][0]) + int(var3))
+					VARS[var][0] = str(int(VARS[var2][0]) + int(var3))
 					return True
 				else:
-					Variables[var][0] = str(int(Variables[var2][0]) - int(var3))
+					VARS[var][0] = str(int(VARS[var2][0]) - int(var3))
 					return True
-		if cast == Variables[var][1]:
+		if cast == VARS[var][1]:
 			if op == "+":
-				Variables[var][0] = str(int(Variables[var3][0]) + int(Variables[var2][0]))
+				VARS[var][0] = str(int(VARS[var3][0]) + int(VARS[var2][0]))
 				return True
 			else:
-				Variables[var][0] = str(int(Variables[var2][0]) - int(Variables[var3][0]))
+				VARS[var][0] = str(int(VARS[var2][0]) - int(VARS[var3][0]))
 				return True
 		else:
 			print("Error de Tipo")
