@@ -300,6 +300,33 @@ def println(line):
 	type_var = Variables[var][1]
 	print("El valor es: "+var+". Su tipo es: "+type_var)
 
+def store_fun(line,fp):
+	obj = func_main.match(line)
+	if obj:
+		return False
+	obj = func.match(line)
+	print(line)
+	print(obj)
+	name_func = obj.group(1)
+	var_func = obj.group(2)
+	type_in = obj.group(3)
+	type_out = obj.group(4)
+	llaves_abiertas = 1
+	Funciones[name_func] = [(var_func,type_in,type_out)]
+	print(Funciones)
+	for line in fp:
+		line = line.strip("\n")
+		line = line.strip("\t")
+		a = identifier(line)
+		if llaves_abiertas == 0:
+			break
+		elif "{" in line:
+			llaves_abiertas = llaves_abiertas + 1
+		elif a == END:
+			llaves_abiertas = llaves_abiertas - 1
+		Funciones[name_func].append(line)
+	return True
+
 
 
 """
