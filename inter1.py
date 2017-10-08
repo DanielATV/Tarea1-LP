@@ -70,18 +70,27 @@ fun_main = re.compile(r"fn\smain\(\)\s{")
 
 println = re.compile("println!\((\w+)\);")
 
-def bool(obj):
-	var = obj.group(1)
-	cond = obj.group(2)
-	var2 = obj.group(3)
-	if var2.isdigit():
-		var = get_val_value(var)
+def bool(line,VARS):
+	obj = while_sent.match(line)
+	if obj:	
+		var = obj.group(1)
+		cond = obj.group(2)
+		var2 = obj.group(3)
 	else:
-		var = get_val_value(var)
-		var2 = get_val_value(var2)
-		if compar_types(var,var2) == False:
-			print "Error de tipos"
-			return False
+		obj = if_sent.match(line)
+		var = obj.group(1)
+		cond = obj.group(2)
+		var2 = obj.group(3)
+	if var2.isdigit():
+		var = get_val_value(var,VARS)
+		var2 = int(var2)
+	elif compar_types(var,var2,VARS) == True:
+		var = get_val_value(var,VARS)
+		var2 = get_val_value(var2,VARS)
+	else:
+		print("Error de tipos")
+		return False
+		
 	if cond == "<":
 		return var < var2
 	elif cond == ">":
@@ -93,8 +102,8 @@ def bool(obj):
 	elif cond == "<=":
 		return var <= var2
 	else:
-		print "Error de Sintaxis"
-		return False
+		print("Error de Sintaxis")
+		return None
 
 def sentence(line,VARS):
 	obj = sent_op.match(line)
