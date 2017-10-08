@@ -119,7 +119,7 @@ def declaration(line,VARS): # En Desarrollo
 	obj = var_val.search(line)
 	if(obj):
 
-		if obj.group(2) == ("i32" or "i16"):
+		if obj.group(2) in ["i32","i16"]:
 
 			up_val(obj.group(1),int(float(obj.group(3))),obj.group(2),VARS)
 
@@ -146,7 +146,7 @@ def declaration(line,VARS): # En Desarrollo
 	if obj:
 
 		if compar_types(obj.group(3),obj.group(5),VARS):
-			if get_val_type(obj.group(3).VARS) == ("i32" or "i16"):
+			if get_val_type(obj.group(3).VARS) in ["i32","i16"]:
 				valor = ops[obj.group(4)](int(obj.group(3)),int(obj.group(5)))
 				up_val(obj.group(1),valor,obj.group(2),VARS)
 				return VARS
@@ -166,7 +166,7 @@ def declaration(line,VARS): # En Desarrollo
 		if compar_types(obj.group(3),obj.group(6),VARS):
 
 		
-			if get_val_type(obj.group(3),VARS) == ("i32" or "i16"):
+			if get_val_type(obj.group(3),VARS) in ["i32","i16"]:
 
 				valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3),VARS))),int(float(get_val_value(obj.group(6),VARS))))
 				up_val(obj.group(1),valor,obj.group(2),VARS)
@@ -184,7 +184,7 @@ def declaration(line,VARS): # En Desarrollo
 
 		if obj.group(4) == get_val_type(obj.group(6),VARS):
 
-			if obj.group(2) == ("i32" or "i16"):				
+			if obj.group(2) in ["i32","i16"]:				
 
 				valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3),VARS))),int(float(get_val_value(obj.group(6),VARS))))
 				up_val(obj.group(1),valor,obj.group(2),VARS)
@@ -201,9 +201,8 @@ def declaration(line,VARS): # En Desarrollo
 
 	obj = var_op_valcasti_valor.search(line)
 	if obj:
-		print obj.groups()
-
-		if obj.group(2) == ("i32" or "i16"):
+	
+		if obj.group(2) in ["i32","i16"]:
 
 			valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3),VARS))),int(float(obj.group(6))))
 			up_val(obj.group(1),valor,obj.group(2),VARS)
