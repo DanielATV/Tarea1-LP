@@ -70,6 +70,12 @@ fun_main = re.compile(r"fn\smain\(\)\s{")
 
 println = re.compile("println!\((\w+)\);")
 
+# Varible
+ind_var = re.compile("[A-z]+")
+
+# Digito
+ind_dig = re.compile("[0-9]+")
+
 """
 identifier(line) : Busca que es lo que se intenta hacer, por ejemplo, definir una funcion.
 Inputs:
@@ -270,12 +276,12 @@ def sentence(line,VARS):
 					VARS[obj.group(1)][0] = str(int(var) - var2)
 					return True
 			elif var2.isdigit():
-				if compar_types(obj.group(1),var):
+				if compar_types(obj.group(1),var,VARS):
 					pass
 				else:
 					print("Error de tipos")
 					return False
-				var = get_val_value(var)
+				var = get_val_value(var,VARS)
 				if op == "+":
 					VARS[obj.group(1)][0] = str(var + int(var2))
 					return True
@@ -283,14 +289,14 @@ def sentence(line,VARS):
 					VARS[obj.group(1)][0] = str(var - int(var2))
 					return True
 			else:
-				if not compar_types(var,var2):
+				if not compar_types(var,var2,VARS):
 					print("Error de tipos")
 					return False
-				if not compar_types(obj.group(1),var):
+				if not compar_types(obj.group(1),var,VARS):
 					print("Error de tipos")
 					return False
-				var = get_val_value(var)
-				var2 = get_val_value(var2)
+				var = get_val_value(var,VARS)
+				var2 = get_val_value(var2,VARS)
 				if op == "+":
 					VARS[obj.group(1)][0] = str(var + var2)
 					return True
@@ -451,7 +457,6 @@ def while_list(line,fp):
 		
 		line = line.strip("\n")
 		line = line.strip("\t")
-		print line
 		a = identifier(line)
 		
 		if llaves_abiertas <= 0:
@@ -564,25 +569,31 @@ def leedor_if():
 		i += 1
 	print i
 
-def leedor_while():
-	i = 0
-	while True:
-		line = file.readline().strip("\n")
-		if end_while.search(line) and len(line) == 2:
-			break
+def leedor_while(listawhile,VARS):
+	
+	variable = listawhile[0][0]
+	operacion = listawhile[0][1]
+	operando = listawhile[0][2]
 
-		'''
-		elif declarar
-		elif asginar
-		elif operaciones
-		elif pr1nt
-		elif funcion
-		elif retorn
-		elif while
-		elif if
-		''' 
-		i += 1
-	print i
+	print variable, operacion, operando
+
+	obj = ind_var.search(operando)
+
+	if obj:
+
+		 derecha = get_val_value(operando,VARS)
+		 izquierda = get_val_value(variable,VARS)
+
+		 if operacion == "<":
+		 	while izquierda < derecha:
+		 		for sent in listawhile[1:]:
+		 			print sent
+		 			sentence(sent,VARS)
+		 			izquierda = get_val_value(variable,VARS)
+		 			derecha = get_val_value(operando,VARS)
+
+
+
 
 file = open("codigo_rust1.txt", "r")
 
@@ -610,11 +621,12 @@ for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden gener
 
 					if while_sent.search(line):
 						ciclowhile = while_list(line,file)
+						leedor_while(ciclowhile,Variables)
 
 
 
 		else:
 			store_fun(line,file)
 
-print ciclowhile
 
+print Variables
