@@ -11,4 +11,8 @@ No hay variables globales (Toda variable se declara dentro de una función).
 
 No estan consideradas las declaraciones de enteros como un flotante (let mut a : i32 = 5.2; )
 
-Si se hace la suma de dos valores enteros se asume que son del mismo tipo de entero (2(i32) + 2(i32)) 
+Si se hace la suma o resta de dos valores enteros se asume que son del mismo tipo de entero. (2(i32) + 2(i32))
+
+Si se suma o resta una varible a a un valor se asume que el valor es de tipo compatible (a(i16) + 2(i16) )
+
+No hay checkeo de tipo en los boleanos.
