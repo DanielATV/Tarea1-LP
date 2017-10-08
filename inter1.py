@@ -437,7 +437,7 @@ def if_exec(line,fp,VARS):
 		cond = obj.group(2)
 		var2 = obj.group(3)
 		if bool(var1,cond,var2,VARS) and COND == False:
-			print("Condicion válida de if")
+		
 			COND = True
 			for line in fp:
 				line = line.strip("\n")
@@ -450,7 +450,7 @@ def if_exec(line,fp,VARS):
 				elif a == WHILE:
 					lista = while_list(line,fp) # Ejecucion de los while
 		else:
-			print("Condicion no válida de if")
+	
 			llaves_abiertas = 1
 			for line in fp:
 				line = line.strip("\n")
@@ -472,7 +472,7 @@ def if_exec(line,fp,VARS):
 		var2 = obj.group(3)
 		print("Entrenado a un else if")
 		if bool(var1,cond,var2,VARS) and COND == False:
-			print("Condicion válida de if")
+		
 			COND = True
 			for line in fp:
 				line = line.strip("\n")
@@ -486,7 +486,7 @@ def if_exec(line,fp,VARS):
 					lista = while_list(line,fp)
 					## Ejecucion de los while
 		else:
-			print("Condicion no válida de if")
+		
 			print("Saltando linea  de if-> "+line)
 			llaves_abiertas = 1
 			for line in fp:
@@ -683,10 +683,18 @@ def leedor_fun(nombre,argumento,VARS):
 	varibles_fun=dict()
 
 	if argumento in VARS.keys():
-		print VARS[argumento]
+
+		up_val(Funciones[nombre][0][0],VARS[argumento][0],Funciones[nombre][0][1],varibles_fun)
+
+		for sent in Funciones[nombre][1:]:
+			print sent
 	else:
 		
-		print Funciones[nombre]
+		up_val(Funciones[nombre][0][0],argumento,Funciones[nombre][0][1],varibles_fun)
+
+		for sent in Funciones[nombre][1:]:
+			print sent
+			#sentence(sent,varibles_fun)
 
 
 
