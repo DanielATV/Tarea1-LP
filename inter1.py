@@ -164,6 +164,7 @@ def declaration(line,VARS): # En Desarrollo
 
 		valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3)))),int(float(get_val_value(obj.group(6)))))
 		up_val(obj.group(1),valor,obj.group(2),VARS)
+		return  VARS
 
 
 
@@ -172,12 +173,14 @@ def declaration(line,VARS): # En Desarrollo
 
 		valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3)))),int(float(obj.group(6))))
 		up_val(obj.group(1),valor,obj.group(2),VARS)
+		return  VARS
 
 	obj = var_op_valcastd_valor.search(line)
 	if obj:
 
 		valor = ops[obj.group(5)](int(float(obj.group(3))),int(float(get_val_value(obj.group(6),VARS))))
 		up_val(obj.group(1),valor,obj.group(2),VARS)
+		return  VARS
 
 	obj = var_op_valcastd_variable.search(line)
 
@@ -185,6 +188,7 @@ def declaration(line,VARS): # En Desarrollo
 
 		valor = ops[obj.group(4)](int(float(get_val_value(obj.group(3),VARS))),int(float(get_val_value(obj.group(5),VARS))))
 		up_val(obj.group(1),valor,obj.group(2),VARS)
+		return  VARS
 
 """
 nombre_funcion(parametros) : breve descripcion
@@ -435,7 +439,7 @@ Outputs:
 
 """
 def while_list(line,fp):
-	obj = while_sent.match(line)
+	obj = while_sent.search(line)
 	var1 = obj.group(1)
 	cond = obj.group(2)
 	var2 = obj.group(3)
@@ -579,29 +583,34 @@ def leedor_while():
 
 file = open("codigo_rust1.txt", "r")
 
-while True: # Considerar hacer un strip "\t" las tabulaciones pueden generar error en los compile
-	line = file.readline().strip("\n")
-	if line == "":
-		break
-	if len(line)==1 and line != "}":
-		continue
+
+
+for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden generar error en los compile
+	line = line.strip("\n")
+	print line
+
 	identificador = identifier(line)
 	if identificador == FN:
 		if fun_main.search(line):
-			continue
+			for line in file:
+				print line
+				identificador = identifier(line)
+				if identificador == LET:
+
+					Variables = declaration(line,Variables)
+
+				elif identificador == IF:
+					print "if"
+
+				elif identificador == WHILE:
+
+					if while_sent.search(line):
+						ciclowhile = while_list(line,file)
+
+
+
 		else:
-			print "funcion"
-	elif identificador == LET:
+			store_fun(line,file)
 
-		declaration(line,Variables)
 
-	elif identificador == IF:
-		print "if"
-		if if_sent.search(line):
-			leedor_if()
-	elif identificador == WHILE:
-		print "while"
-		if while_sent.search(line):
-			leedor_while()
 
-print Variables
