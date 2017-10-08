@@ -119,9 +119,17 @@ def declaration(line,VARS): # En Desarrollo
 	obj = var_val.search(line)
 	if(obj):
 
-		up_val(obj.group(1),obj.group(3),obj.group(2),VARS)
+		if obj.group(2) == ("i32" or "i16"):
 
-		return VARS
+			up_val(obj.group(1),int(float(obj.group(3))),obj.group(2),VARS)
+
+			return VARS
+		else:
+
+			up_val(obj.group(1),int(float(obj.group(3))),obj.group(2),VARS)
+
+			return VARS
+
 
 	obj = var_var.search(line)
 	if(obj):
@@ -193,8 +201,9 @@ def declaration(line,VARS): # En Desarrollo
 
 	obj = var_op_valcasti_valor.search(line)
 	if obj:
+		#print obj.groups()
 
-		valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3)))),int(float(obj.group(6))))
+		valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3),VARS))),int(float(obj.group(6))))
 		up_val(obj.group(1),valor,obj.group(2),VARS)
 		return  VARS
 
