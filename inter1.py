@@ -105,6 +105,41 @@ def identifier(line):
 	else:
 		return SENT
 """
+ret_fun(line,tipo,VARS) : 
+Inputs:
+(string): La linea que se esta leyendo del archivo.
+(string): El tipo de dato que se retorna
+(diccionario): El diccionario de las variables del enterno en que se trabaja.
+
+Outputs:
+(string): El resultado de la operacion en forma de string
+
+"""
+
+	
+def ret_fun(line,tipo,VARS):
+	obj = retorno_var_val.match(line)
+	if obj:
+		var = obj.group(1)
+		if var.isdigit():
+			return var
+		else:
+			var = VARS[var]
+			return var
+	obj = retorno_opsc.match(line)
+	if obj:
+		return operation(line,VARS)
+	obj = retorno_cd
+	if obj:
+		return operation(line,VARS)
+	obj = retorno_ci
+	if obj:
+		return operation(line,VARS)
+	obj = retorno_dc
+	if obj:
+		return operation(line,VARS)
+
+"""
 declaration(line,VARS) : 
 Inputs:
 (string): La linea que se esta leyendo del archivo.
@@ -325,52 +360,52 @@ def sentence(line,VARS):
 			if var.isdigit() and var2.isdigit():
 				if op == "+":
 					VARS[obj.group(1)][0] = str(int(var) + int(var2))
-					return True
+					return VARS
 				elif op == "-":
 					VARS[obj.group(1)][0] = str(int(var) - int(var2))
-					return True
+					return VARS
 			elif var.isdigit():
 				if not compar_types(obj.group(1),var2):
 					print("Error de tipos")
-					return False
-				var2 = get_val_value(var2)
+					return None
+				var2 = get_val_value(var2,VARS)
 				if op == "+":
 					VARS[obj.group(1)][0] = str(int(var) + var2)
-					return True
+					return VARS
 				else:
 					VARS[obj.group(1)][0] = str(int(var) - var2)
-					return True
+					return VARS
 			elif var2.isdigit():
 				if compar_types(obj.group(1),var,VARS):
 					pass
 				else:
 					print("Error de tipos")
-					return False
+					return None
 				var = get_val_value(var,VARS)
 				if op == "+":
 					VARS[obj.group(1)][0] = str(var + int(var2))
-					return True
+					return VARS
 				else:
 					VARS[obj.group(1)][0] = str(var - int(var2))
-					return True
+					return VARS
 			else:
 				if not compar_types(var,var2,VARS):
 					print("Error de tipos")
-					return False
+					return None
 				if not compar_types(obj.group(1),var,VARS):
 					print("Error de tipos")
-					return False
+					return None
 				var = get_val_value(var,VARS)
 				var2 = get_val_value(var2,VARS)
 				if op == "+":
 					VARS[obj.group(1)][0] = str(var + var2)
-					return True
+					return VARS
 				else:
 					VARS[obj.group(1)][0] = str(var - var2)
-					return True
+					return VARS
 		else:
 			print("Variable "+obj.group(1)+" no declarada")
-			return False
+			return None
 
 	obj = sent_func.match(line)
 
@@ -386,7 +421,7 @@ def sentence(line,VARS):
 				VARS[var][0] = get_val_value(var2)
 			else:
 				print("Error de Tipo")
-				return False
+				return None
 		else:
 			print("Variable o variables no definidas")
 	
@@ -396,9 +431,9 @@ def sentence(line,VARS):
 		val = obj.group(2)
 		if var not in VARS.keys():
 			print("Variable "+var+" no definida")
-			return False
+			return None
 		VARS[var] = int(val)
-		return True
+		return VARS
 	
 	obj = sent_op_cast.match(line)
 	if (obj):
@@ -407,12 +442,12 @@ def sentence(line,VARS):
 		cast = obj.group(3)
 		if var not in VARS.keys():
 			print("Variable "+var+" no definida")
-			return False
+			return None
 		if cast == VARS[var][1]:
 			VARS[var][0] = var2
 		else:
 			print("Error de Tipo")
-			return False
+			return None
 
 	obj = sent_op_valcastd.match(line)
 	if (obj):
@@ -425,20 +460,20 @@ def sentence(line,VARS):
 			if cast == VARS[var][1]:
 				if op == "+":
 					VARS[var][0] = str(int(VARS[var3][0]) + int(var2))
-					return True
+					return VARS
 				else:
 					VARS[var][0] = str(int(var2) - int(var3))
-					return True
+					return VARS
 		if cast == VARS[var2][1] and cast == VARS[var][1]:
 			if op == "+":
 				VARS[var][0] = str(int(VARS[var3][0]) + int(VARS[var2][0]))
-				return True
+				return VARS
 			else:
 				VARS[var][0] = str(int(VARS[var2][0]) - int(var3))
-				return True
+				return VARS
 		else:
 			print("Error de Tipo")
-			return False
+			return None
 
 	obj = sent_op_valcasti.match(line)
 	if (obj):
@@ -451,20 +486,62 @@ def sentence(line,VARS):
 			if cast == VARS[var][1]:
 				if op == "+":
 					VARS[var][0] = str(int(VARS[var2][0]) + int(var3))
-					return True
+					return VARS
 				else:
 					VARS[var][0] = str(int(VARS[var2][0]) - int(var3))
-					return True
+					return VARS
 		if cast == VARS[var][1]:
 			if op == "+":
 				VARS[var][0] = str(int(VARS[var3][0]) + int(VARS[var2][0]))
-				return True
+				return VARS
 			else:
 				VARS[var][0] = str(int(VARS[var2][0]) - int(VARS[var3][0]))
-				return True
+				return VARS
 		else:
 			print("Error de Tipo")
-			return False
+			return None
+	obj = sent_op_doublecast.match(line)
+	if (obj):
+		var = obj.group(1)
+		var1 = obj.group(2)
+		cast1 = obj.group(3)
+		op = obj.group(4)
+		var2 = obj.group(5)
+		cast2 = obj.group(6)
+		if(cast1 == cast2):
+			if cast1 in ["i16","i32"] and VARS[var1][1] == "f64":
+				var1 = float_to_int(var1,VARS)
+			if cast2 in ["i16","i32"] and VARS[var2][1] == "f64":
+				var2 = float_to_int(var2,VARS)
+			if cast1 == "f64" and VARS[var1][1] in ["i16","i32"]:
+				var1 = int_to_float(var1,VARS)
+			if cast2 == "f64" and VARS[var2][1] in ["i16","i32"]:
+				var2 = int_to_float(var2,VARS)
+			if VARS[var][1] == cast1:
+				if cast1 == "f64" and op == "+":
+					VARS[var][0] = str(float(var1) + float(var2))
+				if cast1 == "f64" and op == "-":
+					VARS[var][0] = str(float(var1) - float(var2))
+				if cast1 in ["i16","i32"] and op == "+":
+					VARS[var][0] = str(int(VARS[var1][0]) + int(VARS[var2][0]))
+				if cast1 in ["i16","i32"] and op == "-":
+					VARS[var][0] = str(int(VARS[var1][0]) - int(VARS[var2][0]))
+			else:
+				print("Error de Tipo")
+				return None
+			return VARS
+		else:
+			print("Error de Tipo")
+			return None
+
+
+def float_to_int(var,VARS):
+	var = VARS[var][0].split(".")[0]
+	return var
+
+def int_to_float(var,VARS):
+	var = VARS[var][0]+".0"
+	return var
 
 """
 if_exec(line,fp,VARS) : Evalua y ejecuta if, else if y else dentro del codigo fuente. 
