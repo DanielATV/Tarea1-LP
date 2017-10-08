@@ -414,6 +414,130 @@ def sentence(line,VARS):
 			return False
 
 """
+if_exec(line,fp,VARS) : Evalua y ejecuta if, else if y else dentro del codigo fuente. 
+Inputs:
+
+(string): Linea que lee del archivo.
+(file pointer): Archivo que se esta leyendo.
+(dict): Diccionario con las variables del entorno
+
+Outputs:
+(dict): Diccionario con las variables de entorno procesadas
+
+"""
+
+def if_exec(line,fp,VARS):
+	print("Entrenado a un if")
+	print("Linea -> "+line)
+	llaves_abiertas = 1
+	COND = False
+	obj = if_sent.match(line)
+	if obj:
+		print("Hay match de if")
+		var1 = obj.group(1)
+		cond = obj.group(2)
+		var2 = obj.group(3)
+		if bool(var1,cond,var2,VARS) and COND == False:
+			print("Condicion válida de if")
+			COND = True
+			for line in fp:
+				line = line.strip("\n")
+				line = line.strip("\t")
+				a = identifier(line)
+				if a == SENT:
+					VARS = sentence(line,VARS)
+				elif a == IF:
+					VARS = if_exec(line,fp,VARS)
+				elif a == WHILE:
+					lista = while_list(line,fp) # Ejecucion de los while
+		else:
+			print("Condicion no válida de if")
+			llaves_abiertas = 1
+			for line in fp:
+				line = line.strip("\n")
+				line = line.strip("\t")
+				print("Saltando linea  de if-> "+line)
+				if llaves_abiertas == 0:
+						break
+				if "}" in line:
+					llaves_abiertas = llaves_abiertas - 1
+					if llaves_abiertas == 0:
+						break
+				if "{" in line:
+					llaves_abiertas = llaves_abiertas + 1			
+	obj = elseif_sent.match(line)
+	if obj:
+		print("Hay match de else if")
+		var1 = obj.group(1)
+		cond = obj.group(2)
+		var2 = obj.group(3)
+		print("Entrenado a un else if")
+		if bool(var1,cond,var2,VARS) and COND == False:
+			print("Condicion válida de if")
+			COND = True
+			for line in fp:
+				line = line.strip("\n")
+				line = line.strip("\t")
+				a = identifier(line)
+				if a == SENT:
+					VARS = sentence(line,VARS)
+				elif a == IF:
+					VARS = if_exec(line,fp,VARS)
+				elif a == WHILE:
+					lista = while_list(line,fp)
+					## Ejecucion de los while
+		else:
+			print("Condicion no válida de if")
+			print("Saltando linea  de if-> "+line)
+			llaves_abiertas = 1
+			for line in fp:
+				line = line.strip("\n")
+				line = line.strip("\t")
+				if llaves_abiertas == 0:
+						break
+				if "}" in line:
+					llaves_abiertas = llaves_abiertas - 1
+					if llaves_abiertas == 0:
+						break
+				if "{" in line:
+					llaves_abiertas = llaves_abiertas + 1			
+	obj = else_sent.match(line)
+	if obj:
+		print("Entrenado a un else")
+		print("Linea -> "+line)
+		if COND == False:
+			COND = True
+			for line in fp:
+				line = line.strip("\n")
+				line = line.strip("\t")
+				print("Evaluando -> "+line)
+				a = identifier(line)
+				if a == SENT:
+					print(VARS)
+					VARS = sentence(line,VARS)
+					print(VARS)
+				elif a == IF:
+					VARS = if_exec(line,fp,VARS)
+				elif a == WHILE:
+					lista = while_list(line,fp) ## Ejecucion de los while
+				elif "}" in line:
+					break
+		else:
+			llaves_abiertas = 1
+			for line in fp:
+				line = line.strip("\n")
+				line = line.strip("\t")
+				if llaves_abiertas == 0:
+						break
+				if "}" in line:
+					llaves_abiertas = llaves_abiertas - 1
+					if llaves_abiertas == 0:
+						break
+				if "{" in line:
+					llaves_abiertas = llaves_abiertas + 1
+	return VARS	
+
+"""
 Store_fun(line,fp) : Guarda la funcion en un diccionario. 
 Inputs:
 
@@ -424,6 +548,7 @@ Outputs:
 (tipo dato) descripcion
 
 """
+
 def store_fun(line,fp):
 	obj = func_main.match(line)
 	if obj:
