@@ -247,23 +247,24 @@ def sentence(line,VARS):
 			print("Error de Tipo")
 			return False
 
-def up_val(var,valor,tipo):
-	Variables[var] = [valor,tipo]
+def up_val(var,valor,tipo,VARS):
+	VARS[var] = [valor,tipo]
+	return VARS
 
-def get_val_type(var):
-	if var not in Variables.keys():
+def get_val_type(var,VARS):
+	if var not in VARS.keys():
 		return None
 	else:
-		return Variables[var][1]
+		return VARS[var][1]
 
-def get_val_value(var):
-	if var not in Variables.keys():
+def get_val_value(var,VARS):
+	if var not in VARS.keys():
 		return None
 	else:
-		return Variables[var][0]
+		return int(VARS[var][0])
 
-def compar_types(var1,var2): ###
-	if Variables[var1][1] == Variables[var2][1]:
+def compar_types(var1,var2,VARS): ###
+	if VARS[var1][1] == VARS[var2][1]:
 		return True
 	else:
 		return False
