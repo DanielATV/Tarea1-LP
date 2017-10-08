@@ -585,12 +585,26 @@ def leedor_while(listawhile,VARS):
 		 izquierda = get_val_value(variable,VARS)
 
 		 if operacion == "<":
-		 	while izquierda < derecha:
+		 	while int(izquierda) < int(derecha):
 		 		for sent in listawhile[1:]:
 		 			print sent
 		 			sentence(sent,VARS)
 		 			izquierda = get_val_value(variable,VARS)
 		 			derecha = get_val_value(operando,VARS)
+
+	obj = ind_dig.search(operando)
+
+	if obj:
+		izquierda = get_val_value(variable,VARS)
+		if operacion == "<":
+			while izquierda < int(operando):
+				for sent in listawhile[1:]:
+					print sent
+		 			sentence(sent,VARS)
+		 			izquierda = get_val_value(variable,VARS)
+
+
+
 
 
 
