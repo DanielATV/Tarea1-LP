@@ -25,7 +25,7 @@ var_var = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([A-z]+);")
 var_func = re.compile("let mut\s(\w*)\s:\s(i16|i32|f64)\s=\s(\w*)\((\w+)\);")
 var_op = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([0-9]+)\s*(\+|\-)\s*([0-9]+);")
 var_op_cast_cast = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\);")
-var_op_valcasti_variable = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s([A-z]+);")
+var_op_valcasti_variable = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*([A-z]+);")
 var_op_valcasti_valor = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s([0-9]+(.[0-9]+)?);")
 var_op_valcastd_variable = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([A-z]+)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
 var_op_valcastd_valor = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([0-9]+(.[0-9]+)?)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
@@ -173,9 +173,15 @@ def declaration(line,VARS): # En Desarrollo
 	obj = var_op_valcasti_variable.search(line)
 	if obj:
 
-		valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3)))),int(float(get_val_value(obj.group(6)))))
-		up_val(obj.group(1),valor,obj.group(2),VARS)
-		return  VARS
+
+		if obj.group(4) == get_val_type(obj.group(6),VARS):
+
+			valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3),VARS))),int(float(get_val_value(obj.group(6),VARS))))
+			up_val(obj.group(1),valor,obj.group(2),VARS)
+			return  VARS
+		else:
+			print "Error tipo"
+			return None
 
 
 
@@ -651,7 +657,7 @@ def get_val_value(var,VARS):
 	if var not in VARS.keys():
 		return None
 	else:
-		return int(VARS[var][0])
+		return VARS[var][0]
 """
 nombre_funcion(parametros) : breve descripcion
 Inputs:
@@ -842,7 +848,7 @@ for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden gener
 
 	identificador = identifier(line)
 	if identificador == FN:
-		if func_main.search(line):
+		if func_main.match(line):
 			for line in file:
 				line = line.strip("\n").strip("\t")
 
@@ -870,8 +876,12 @@ for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden gener
 
 
 
-		elif func.search(line):
+		elif func.match(line):
 			store_fun(line,file)
+
+		else:
+			print "Error"
+			break
 			
 
 
