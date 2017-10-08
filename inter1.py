@@ -26,8 +26,8 @@ var_op = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([0-9]+)\s*(\+|\-
 var_op_cast_cast = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\);")
 var_op_valcasti_variable = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s([A-z]+);")
 var_op_valcasti_valor = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s([0-9]+(.[0-9]+)?);")
-var_op_valcastd_valor = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
-var_op_valcastd_variable = re.compile("")
+var_op_valcastd_variable = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([A-z]+)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
+var_op_valcastd_valor = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([0-9]+(.[0-9]+)?)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
 
 #Operaciones y Cast
 
@@ -313,11 +313,18 @@ def declaration(line): # En Desarrollo
 		else:
 			print "Error Tipo"
 		
-	obj = var_op_valcasti.search(line)
+	#Faltan ver los checkeos de tipo
+	obj = var_op_valcasti_variable.search(line)
 	if obj:
-		print obj.groups()
 
-	obj = sent_op_valcastd.search(line)
+		valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3)))),int(float(get_val_value(obj.group(6)))))
+		up_val(obj.group(1),valor,obj.group(2))
+
+
+
+	obj = var_op_valcasti_valor.search(line)
+	obj = var_op_valcastd_valor.search(line)
+	obj = var_op_valcastd_variable.search(line)
 
 
 
