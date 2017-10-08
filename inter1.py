@@ -126,7 +126,7 @@ def declaration(line,VARS): # En Desarrollo
 			return VARS
 		else:
 
-			up_val(obj.group(1),int(float(obj.group(3))),obj.group(2),VARS)
+			up_val(obj.group(1),float(obj.group(3)),obj.group(2),VARS)
 
 			return VARS
 
@@ -147,8 +147,8 @@ def declaration(line,VARS): # En Desarrollo
 
 		if compar_types(obj.group(3),obj.group(5),VARS):
 			if get_val_type(obj.group(3).VARS) in ["i32","i16"]:
-				valor = ops[obj.group(4)](int(obj.group(3)),int(obj.group(5)))
-				up_val(obj.group(1),valor,obj.group(2),VARS)
+				valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
+				up_val(obj.group(1),int(valor),obj.group(2),VARS)
 				return VARS
 			else:
 				valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
@@ -168,8 +168,8 @@ def declaration(line,VARS): # En Desarrollo
 		
 			if get_val_type(obj.group(3),VARS) in ["i32","i16"]:
 
-				valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3),VARS))),int(float(get_val_value(obj.group(6),VARS))))
-				up_val(obj.group(1),valor,obj.group(2),VARS)
+				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
+				up_val(obj.group(1),int(valor),obj.group(2),VARS)
 		
 			else:
 				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
@@ -186,8 +186,8 @@ def declaration(line,VARS): # En Desarrollo
 
 			if obj.group(2) in ["i32","i16"]:				
 
-				valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3),VARS))),int(float(get_val_value(obj.group(6),VARS))))
-				up_val(obj.group(1),valor,obj.group(2),VARS)
+				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
+				up_val(obj.group(1),int(valor),obj.group(2),VARS)
 				return  VARS
 			else:
 				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
@@ -204,8 +204,8 @@ def declaration(line,VARS): # En Desarrollo
 	
 		if obj.group(2) in ["i32","i16"]:
 
-			valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3),VARS))),int(float(obj.group(6))))
-			up_val(obj.group(1),valor,obj.group(2),VARS)
+			valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(obj.group(6)))
+			up_val(obj.group(1),int(valor),obj.group(2),VARS)
 			return  VARS
 
 		else:
@@ -218,8 +218,8 @@ def declaration(line,VARS): # En Desarrollo
 
 		if obj.group(2) in ["i32","i16"]:
 
-			valor = ops[obj.group(5)](int(float(obj.group(3))),int(float(get_val_value(obj.group(6),VARS))))
-			up_val(obj.group(1),valor,obj.group(2),VARS)
+			valor = ops[obj.group(5)](float(obj.group(3)),float(get_val_value(obj.group(6),VARS)))
+			up_val(obj.group(1),int(valor),obj.group(2),VARS)
 			return  VARS
 
 		else:
@@ -232,9 +232,23 @@ def declaration(line,VARS): # En Desarrollo
 
 	if obj:
 
-		valor = ops[obj.group(4)](int(float(get_val_value(obj.group(3),VARS))),int(float(get_val_value(obj.group(5),VARS))))
-		up_val(obj.group(1),valor,obj.group(2),VARS)
-		return  VARS
+		print obj.groups()
+		if obj.group(6) == get_val_type(obj.group(3),VARS):
+
+			if obj.group(2) in ["i32","i16"]:	
+
+				valor = ops[obj.group(4)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(5),VARS)))
+				up_val(obj.group(1),int(valor),obj.group(2),VARS)
+				return  VARS
+
+			else:
+				valor = ops[obj.group(4)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(5),VARS)))
+				up_val(obj.group(1),valor,obj.group(2),VARS)
+				return  VARS
+
+		else:
+			print "Error de tipo"
+			return None
 
 	obj = var_func.search(line)
 
