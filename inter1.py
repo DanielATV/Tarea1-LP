@@ -281,6 +281,29 @@ def store_fun(line,fp):
 		Funciones[name_func].append(line)
 	return True
 
+def while_list(line,fp):
+	obj = while_sent.match(line)
+	var1 = obj.group(1)
+	cond = obj.group(2)
+	var2 = obj.group(3)
+	lista = list()
+	lista.append((var1,cond,var2))
+	llaves_abiertas = 1
+	for line in fp:
+		line = line.strip("\n")
+		line = line.strip("\t")
+		a = identifier(line)
+		print(llaves_abiertas)
+		if llaves_abiertas <= 0:
+			break
+		if "}" in line:
+			llaves_abiertas = llaves_abiertas - 1
+		if "{" in line:
+			llaves_abiertas = llaves_abiertas + 1
+		lista.append(line)
+	return lista
+
+
 def up_val(var,valor,tipo,VARS):
 	VARS[var] = [valor,tipo]
 	return VARS
