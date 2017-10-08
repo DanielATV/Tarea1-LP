@@ -64,7 +64,7 @@ retorno_cd = re.compile("return\s(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\)
 #Funciones
 
 func = re.compile("fn\s(\w*)\((\w):\s(i16|i32|f64)\)\s->\s(i16|i32|f64){")
-fun_main = re.compile(r"fn\smain\(\)\s{")
+func_main = re.compile(r"fn\smain\(\)\s{")
 
 #Print
 
@@ -402,9 +402,11 @@ def sentence(line,VARS):
 			return False
 
 """
-nombre_funcion(parametros) : breve descripcion
+Store_fun(line,fp) : Guarda la funcion en un diccionario. 
 Inputs:
-(tipo dato) descripcion
+
+(string): Linea que lee del archivo.
+(file object): Archivo que se esta leyendo.
 
 Outputs:
 (tipo dato) descripcion
@@ -425,7 +427,6 @@ def store_fun(line,fp):
 		line = line.strip("\n")
 		line = line.strip("\t")
 		a = identifier(line)
-		print(llaves_abiertas)
 		if llaves_abiertas <= 0:
 			break
 		if "}" in line:
@@ -569,6 +570,16 @@ def leedor_if():
 		i += 1
 	print i
 
+"""
+leedor_while(listawhile,VARS) : Construye el while que se le entrega como lista.
+Inputs:
+(lista): Lista de todas las sentencias del while.
+(diccionario): Diccionario de las variables del entorno.
+
+Outputs:
+(None): No retorna parametro.
+
+"""
 def leedor_while(listawhile,VARS):
 	
 	variable = listawhile[0][0]
@@ -672,7 +683,7 @@ for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden gener
 
 	identificador = identifier(line)
 	if identificador == FN:
-		if fun_main.search(line):
+		if func_main.search(line):
 			for line in file:
 				line = line.strip("\n").strip("\t")
 
@@ -694,6 +705,6 @@ for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden gener
 
 		else:
 			store_fun(line,file)
+			print Funciones
 
 
-print Variables
