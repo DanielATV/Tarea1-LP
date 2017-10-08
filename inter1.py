@@ -12,11 +12,13 @@ LET = "let mut"
 WHILE = "while"
 IF = "if"
 ELSE = "else"
+ELSE_IF = "else if"
 RETURN = "return"
 FN = "fn"
 SENT = ";"
 END = "}"
 PRINT = "println!"
+
 
 #Declaracion de variables
 
@@ -50,7 +52,7 @@ sent_op_doublecast = re.compile("(\w+)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\
 
 #If & While
 
-while_sent = re.compile(r"while\s(\w*)\s(<=|>=|>|<|=)\s(\w*){")
+while_sent = re.compile(r"while\s(\w*)\s(<=|>=|>|<|=)\s(\w*)\s*{")
 if_sent = re.compile("if\s(\w*)\s(<=|>=|>|<|=)\s(\w*)\s{")
 end_while = end_func = end_if = re.compile("}")
 elseif_sent = re.compile("} else if (([A-z]) (<=|>=|>|<|=) ([A-z]+|[0-9]+)) {")
@@ -79,6 +81,7 @@ ind_var = re.compile("[A-z]+")
 # Digito
 ind_dig = re.compile("[0-9]+")
 
+
 """
 identifier(line) : Busca que es lo que se intenta hacer, por ejemplo, definir una funcion.
 Inputs:
@@ -92,6 +95,8 @@ def identifier(line):
 		return LET
 	elif WHILE in line:
 		return WHILE
+	elif ELSE_IF in line:
+		return ELSE_IF
 	elif IF in line:
 		return IF
 	elif ELSE in line:
@@ -106,6 +111,41 @@ def identifier(line):
 		return PRINT
 	else:
 		return SENT
+"""
+ret_fun(line,tipo,VARS) : 
+Inputs:
+(string): La linea que se esta leyendo del archivo.
+(string): El tipo de dato que se retorna
+(diccionario): El diccionario de las variables del enterno en que se trabaja.
+
+Outputs:
+(string): El resultado de la operacion en forma de string
+
+"""
+
+	
+def ret_fun(line,tipo,VARS):
+	obj = retorno_var_val.match(line)
+	if obj:
+		var = obj.group(1)
+		if var.isdigit():
+			return var
+		else:
+			var = VARS[var]
+			return var
+	obj = retorno_opsc.match(line)
+	if obj:
+		return operation(line,VARS)
+	obj = retorno_cd
+	if obj:
+		return operation(line,VARS)
+	obj = retorno_ci
+	if obj:
+		return operation(line,VARS)
+	obj = retorno_dc
+	if obj:
+		return operation(line,VARS)
+
 """
 declaration(line,VARS) : 
 Inputs:
@@ -272,27 +312,13 @@ Outputs:
 (tipo dato) descripcion
 
 """
-def bool(line,VARS):
-	obj = while_sent.match(line)
-	if obj:	
-		var = obj.group(1)
-		cond = obj.group(2)
-		var2 = obj.group(3)
-	else:
-		obj = if_sent.match(line)
-		var = obj.group(1)
-		cond = obj.group(2)
-		var2 = obj.group(3)
+def bool(var,cond,var2,VARS):
 	if var2.isdigit():
 		var = get_val_value(var,VARS)
 		var2 = int(var2)
 	elif compar_types(var,var2,VARS) == True:
 		var = get_val_value(var,VARS)
 		var2 = get_val_value(var2,VARS)
-	else:
-		print("Error de tipos")
-		return False
-		
 	if cond == "<":
 		return var < var2
 	elif cond == ">":
@@ -306,6 +332,7 @@ def bool(line,VARS):
 	else:
 		print("Error de Sintaxis")
 		return None
+
 
 """
 nombre_funcion(parametros) : breve descripcion
@@ -327,57 +354,67 @@ def sentence(line,VARS):
 			if var.isdigit() and var2.isdigit():
 				if op == "+":
 					VARS[obj.group(1)][0] = str(int(var) + int(var2))
-					return True
+					return VARS
 				elif op == "-":
 					VARS[obj.group(1)][0] = str(int(var) - int(var2))
-					return True
+					return VARS
 			elif var.isdigit():
 				if not compar_types(obj.group(1),var2):
 					print("Error de tipos")
-					return False
-				var2 = get_val_value(var2)
+					return None
+				var2 = get_val_value(var2,VARS)
 				if op == "+":
 					VARS[obj.group(1)][0] = str(int(var) + var2)
-					return True
+					return VARS
 				else:
 					VARS[obj.group(1)][0] = str(int(var) - var2)
-					return True
+					return VARS
 			elif var2.isdigit():
 				if compar_types(obj.group(1),var,VARS):
 					pass
 				else:
 					print("Error de tipos")
-					return False
+					return None
 				var = get_val_value(var,VARS)
 				if op == "+":
 					VARS[obj.group(1)][0] = str(var + int(var2))
-					return True
+					return VARS
 				else:
 					VARS[obj.group(1)][0] = str(var - int(var2))
-					return True
+					return VARS
 			else:
 				if not compar_types(var,var2,VARS):
 					print("Error de tipos")
-					return False
+					return None
 				if not compar_types(obj.group(1),var,VARS):
 					print("Error de tipos")
-					return False
+					return None
 				var = get_val_value(var,VARS)
 				var2 = get_val_value(var2,VARS)
 				if op == "+":
 					VARS[obj.group(1)][0] = str(var + var2)
-					return True
+					return VARS
 				else:
 					VARS[obj.group(1)][0] = str(var - var2)
-					return True
+					return VARS
 		else:
 			print("Variable "+obj.group(1)+" no declarada")
-			return False
+			return None
 
 	obj = sent_func.match(line)
 
 	if (obj):# Falta La funcion que ejecuta las funciones para llamarla aca
 		pass 
+
+	obj = sent_val.match(line)
+	if (obj):
+		var = obj.group(1)
+		val = obj.group(2)
+		if var not in VARS.keys():
+			print("Variable "+var+" no definida")
+			return None
+		VARS[var][0] = val
+		return VARS
 
 	obj = sent_var.match(line)
 	if (obj):
@@ -388,19 +425,9 @@ def sentence(line,VARS):
 				VARS[var][0] = get_val_value(var2)
 			else:
 				print("Error de Tipo")
-				return False
+				return None
 		else:
 			print("Variable o variables no definidas")
-	
-	obj = sent_val.match(line)
-	if (obj):
-		var = obj.group(1)
-		val = obj.group(2)
-		if var not in VARS.keys():
-			print("Variable "+var+" no definida")
-			return False
-		VARS[var] = int(val)
-		return True
 	
 	obj = sent_op_cast.match(line)
 	if (obj):
@@ -409,12 +436,12 @@ def sentence(line,VARS):
 		cast = obj.group(3)
 		if var not in VARS.keys():
 			print("Variable "+var+" no definida")
-			return False
+			return None
 		if cast == VARS[var][1]:
 			VARS[var][0] = var2
 		else:
 			print("Error de Tipo")
-			return False
+			return None
 
 	obj = sent_op_valcastd.match(line)
 	if (obj):
@@ -427,20 +454,20 @@ def sentence(line,VARS):
 			if cast == VARS[var][1]:
 				if op == "+":
 					VARS[var][0] = str(int(VARS[var3][0]) + int(var2))
-					return True
+					return VARS
 				else:
 					VARS[var][0] = str(int(var2) - int(var3))
-					return True
+					return VARS
 		if cast == VARS[var2][1] and cast == VARS[var][1]:
 			if op == "+":
 				VARS[var][0] = str(int(VARS[var3][0]) + int(VARS[var2][0]))
-				return True
+				return VARS
 			else:
 				VARS[var][0] = str(int(VARS[var2][0]) - int(var3))
-				return True
+				return VARS
 		else:
 			print("Error de Tipo")
-			return False
+			return None
 
 	obj = sent_op_valcasti.match(line)
 	if (obj):
@@ -453,20 +480,62 @@ def sentence(line,VARS):
 			if cast == VARS[var][1]:
 				if op == "+":
 					VARS[var][0] = str(int(VARS[var2][0]) + int(var3))
-					return True
+					return VARS
 				else:
 					VARS[var][0] = str(int(VARS[var2][0]) - int(var3))
-					return True
+					return VARS
 		if cast == VARS[var][1]:
 			if op == "+":
 				VARS[var][0] = str(int(VARS[var3][0]) + int(VARS[var2][0]))
-				return True
+				return VARS
 			else:
 				VARS[var][0] = str(int(VARS[var2][0]) - int(VARS[var3][0]))
-				return True
+				return VARS
 		else:
 			print("Error de Tipo")
-			return False
+			return None
+	obj = sent_op_doublecast.match(line)
+	if (obj):
+		var = obj.group(1)
+		var1 = obj.group(2)
+		cast1 = obj.group(3)
+		op = obj.group(4)
+		var2 = obj.group(5)
+		cast2 = obj.group(6)
+		if(cast1 == cast2):
+			if cast1 in ["i16","i32"] and "f64" in VARS[var1]:
+				var1 = float_to_int(var1,VARS)
+			if cast2 in ["i16","i32"] and VARS[var2][1] == "f64":
+				var2 = float_to_int(var2,VARS)
+			if cast1 == "f64" and VARS[var1][1] in ["i16","i32"]:
+				var1 = int_to_float(var1,VARS)
+			if cast2 == "f64" and VARS[var2][1] in ["i16","i32"]:
+				var2 = int_to_float(var2,VARS)
+			if VARS[var][1] == cast1:
+				if cast1 == "f64" and op == "+":
+					VARS[var][0] = str(float(var1) + float(var2))
+				if cast1 == "f64" and op == "-":
+					VARS[var][0] = str(float(var1) - float(var2))
+				if cast1 in ["i16","i32"] and op == "+":
+					VARS[var][0] = str(int(VARS[var1][0]) + int(VARS[var2][0]))
+				if cast1 in ["i16","i32"] and op == "-":
+					VARS[var][0] = str(int(VARS[var1][0]) - int(VARS[var2][0]))
+			else:
+				print("Error de Tipo")
+				return None
+			return VARS
+		else:
+			print("Error de Tipo")
+			return None
+
+
+def float_to_int(var,VARS):
+	var = VARS[var][0].split(".")[0]
+	return var
+
+def int_to_float(var,VARS):
+	var = VARS[var][0]+".0"
+	return var
 
 """
 if_exec(line,fp,VARS) : Evalua y ejecuta if, else if y else dentro del codigo fuente. 
@@ -789,96 +858,117 @@ Outputs:
 (None): No retorna parametro.
 
 """
-def leedor_while(listawhile,VARS):
+def exe_while(lista_while,fp,VARS):
+
+	Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
+	while Flag:
+		for line in lista_while[1:]:
+			a = identifier(line)
+			if a == SENT:
+				VARS = sentence(line,VARS)
+				print(VARS)
+			elif a == IF:
+				VARS = if_exec(line,fp,VARS)
+				print(VARS)
+		Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
+
+# def leedor_while(listawhile,VARS):
+
 	
-	variable = listawhile[0][0]
-	operacion = listawhile[0][1]
-	operando = listawhile[0][2]
+	# variable = listawhile[0][0]
+	# operacion = listawhile[0][1]
+	# operando = listawhile[0][2]
 
-	obj = ind_var.search(operando)
+	# obj = ind_var.search(operando)
 
-	if obj:
-		derecha = get_val_value(operando,VARS)
-		izquierda = get_val_value(variable,VARS)
+	# if obj:
+	# 	derecha = get_val_value(operando,VARS)
+	# 	izquierda = get_val_value(variable,VARS)
 
-		if operacion == "<":
-			while int(izquierda) < int(derecha):
-		 		for sent in listawhile[1:]:
+	# 	if operacion == "<":
+	# 		while int(izquierda) < int(derecha):
+	# 	 		for sent in listawhile[1:]:
 		 			
-		 			sentence(sent,VARS)
-		 			izquierda = get_val_value(variable,VARS)
-		 			derecha = get_val_value(operando,VARS)
+	# 	 			sentence(sent,VARS)
+	# 	 			izquierda = get_val_value(variable,VARS)
+	# 	 			derecha = get_val_value(operando,VARS)
 
-		elif operacion == ">":
-			while int(izquierda) > int(derecha):
-		 		for sent in listawhile[1:]:
+	# 	elif operacion == ">":
+	# 		while int(izquierda) > int(derecha):
+	# 	 		for sent in listawhile[1:]:
 		 			
-		 			sentence(sent,VARS)
-		 			izquierda = get_val_value(variable,VARS)
-		 			derecha = get_val_value(operando,VARS)
+	# 	 			sentence(sent,VARS)
+	# 	 			izquierda = get_val_value(variable,VARS)
+	# 	 			derecha = get_val_value(operando,VARS)
 
-		elif operacion == "=":
-		 	while int(izquierda) == int(derecha):
-		 		for sent in listawhile[1:]:
+	# 	elif operacion == "=":
+	# 	 	while int(izquierda) == int(derecha):
+	# 	 		for sent in listawhile[1:]:
 		 			
-		 			sentence(sent,VARS)
-		 			izquierda = get_val_value(variable,VARS)
-		 			derecha = get_val_value(operando,VARS)
+	# 	 			sentence(sent,VARS)
+	# 	 			izquierda = get_val_value(variable,VARS)
+	# 	 			derecha = get_val_value(operando,VARS)
 
-		elif operacion == ">=":
-		 	while int(izquierda) >= int(derecha):
-		 		for sent in listawhile[1:]:
+	# 	elif operacion == ">=":
+	# 	 	while int(izquierda) >= int(derecha):
+	# 	 		for sent in listawhile[1:]:
 		 			
-		 			sentence(sent,VARS)
-		 			izquierda = get_val_value(variable,VARS)
-		 			derecha = get_val_value(operando,VARS)
+	# 	 			sentence(sent,VARS)
+	# 	 			izquierda = get_val_value(variable,VARS)
+	# 	 			derecha = get_val_value(operando,VARS)
 
-		elif operacion == "<=":
-		 	while int(izquierda) <= int(derecha):
-		 		for sent in listawhile[1:]:
+	# 	elif operacion == "<=":
+	# 	 	while int(izquierda) <= int(derecha):
+	# 	 		for sent in listawhile[1:]:
 		 			
-		 			sentence(sent,VARS)
-		 			izquierda = get_val_value(variable,VARS)
-		 			derecha = get_val_value(operando,VARS)
+	# 	 			sentence(sent,VARS)
+	# 	 			izquierda = get_val_value(variable,VARS)
+	# 	 			derecha = get_val_value(operando,VARS)
 
-	obj = ind_dig.search(operando)
+	# obj = ind_dig.search(operando)
 
-	if obj:
-		izquierda = get_val_value(variable,VARS)
-		if operacion == "<":
-			while izquierda < int(operando):
-				for sent in listawhile[1:]:
+	# if obj:
+
+	#  	izquierda = get_val_value(variable,VARS)
+
+	# 	if operacion == "<":
+
+	# 		while izquierda < int(operando):
+	# 			for sent in listawhile[1:]:
+
+	# 				VARS = sentence(sent,VARS)
+	# 				print VARS
+	# 				izquierda += 1
+
+		#  			izquierda = get_val_value(variable,VARS)
+
+	# 	elif operacion == ">":
+	# 		while izquierda > int(operando):
+	# 			for sent in listawhile[1:]:
 					
-		 			sentence(sent,VARS)
-		 			izquierda = get_val_value(variable,VARS)
+	# 	 			sentence(sent,VARS)
+	# 	 			izquierda = get_val_value(variable,VARS)
 
-		elif operacion == ">":
-			while izquierda > int(operando):
-				for sent in listawhile[1:]:
+	# 	elif operacion == "=":
+	# 		while izquierda == int(operando):
+	# 			for sent in listawhile[1:]:
 					
-		 			sentence(sent,VARS)
-		 			izquierda = get_val_value(variable,VARS)
+	# 	 			sentence(sent,VARS)
+	# 	 			izquierda = get_val_value(variable,VARS)
 
-		elif operacion == "=":
-			while izquierda == int(operando):
-				for sent in listawhile[1:]:
+	# 	elif operacion == ">=":
+	# 		while izquierda >= int(operando):
+	# 			for sent in listawhile[1:]:
 					
-		 			sentence(sent,VARS)
-		 			izquierda = get_val_value(variable,VARS)
+	# 	 			sentence(sent,VARS)
+	# 	 			izquierda = get_val_value(variable,VARS)
 
-		elif operacion == ">=":
-			while izquierda >= int(operando):
-				for sent in listawhile[1:]:
+	# 	elif operacion == "<=":
+	# 		while izquierda <= int(operando):
+	# 			for sent in listawhile[1:]:
 					
-		 			sentence(sent,VARS)
-		 			izquierda = get_val_value(variable,VARS)
-
-		elif operacion == "<=":
-			while izquierda <= int(operando):
-				for sent in listawhile[1:]:
-					
-		 			sentence(sent,VARS)
-		 			izquierda = get_val_value(variable,VARS)
+	# 	 			sentence(sent,VARS)
+	# 	 			izquierda = get_val_value(variable,VARS)
 
 
 
@@ -915,7 +1005,9 @@ for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden gener
 
 					if while_sent.search(line):
 						ciclowhile = while_list(line,file)
-						leedor_while(ciclowhile,Variables)
+
+						exe_while(ciclowhile,file,Variables)
+						#leedor_while(ciclowhile,Variables)
 
 
 
