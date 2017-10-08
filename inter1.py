@@ -336,6 +336,11 @@ def declaration(line): # En Desarrollo
 
 	obj = var_op_valcastd_variable.search(line)
 
+	if obj:
+
+		valor = ops[obj.group(4)](int(float(get_val_value(obj.group(3)))),int(float(get_val_value(obj.group(5)))))
+		up_val(obj.group(1),valor,obj.group(2))
+
 
 
 def cast(var,tipo): ###
