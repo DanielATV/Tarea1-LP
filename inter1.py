@@ -313,11 +313,18 @@ def declaration(line): # En Desarrollo
 		else:
 			print "Error Tipo"
 		
-	obj = var_op_valcasti.search(line)
+	#Faltan ver los checkeos de tipo
+	obj = var_op_valcasti_variable.search(line)
 	if obj:
-		print obj.groups()
 
-	obj = sent_op_valcastd.search(line)
+		valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3)))),int(float(get_val_value(obj.group(6)))))
+		up_val(obj.group(1),valor,obj.group(2))
+
+
+
+	obj = var_op_valcasti_valor.search(line)
+	obj = var_op_valcastd_valor.search(line)
+	obj = var_op_valcastd_variable.search(line)
 
 
 
