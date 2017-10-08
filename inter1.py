@@ -70,6 +70,15 @@ fun_main = re.compile(r"fn\smain\(\)\s{")
 
 println = re.compile("println!\((\w+)\);")
 
+"""
+nombre_funcion(parametros) : breve descripcion
+Inputs:
+(tipo dato) descripcion
+
+Outputs:
+(tipo dato) descripcion
+
+"""
 def bool(line,VARS):
 	obj = while_sent.match(line)
 	if obj:	
@@ -104,6 +113,16 @@ def bool(line,VARS):
 	else:
 		print("Error de Sintaxis")
 		return None
+
+"""
+nombre_funcion(parametros) : breve descripcion
+Inputs:
+(tipo dato) descripcion
+
+Outputs:
+(tipo dato) descripcion
+
+"""
 
 def sentence(line,VARS):
 	obj = sent_op.match(line)
@@ -256,6 +275,15 @@ def sentence(line,VARS):
 			print("Error de Tipo")
 			return False
 
+"""
+nombre_funcion(parametros) : breve descripcion
+Inputs:
+(tipo dato) descripcion
+
+Outputs:
+(tipo dato) descripcion
+
+"""
 def store_fun(line,fp):
 	obj = func_main.match(line)
 	if obj:
@@ -281,6 +309,15 @@ def store_fun(line,fp):
 		Funciones[name_func].append(line)
 	return True
 
+"""
+nombre_funcion(parametros) : breve descripcion
+Inputs:
+(tipo dato) descripcion
+
+Outputs:
+(tipo dato) descripcion
+
+"""
 def while_list(line,fp):
 	obj = while_sent.match(line)
 	var1 = obj.group(1)
@@ -303,29 +340,71 @@ def while_list(line,fp):
 		lista.append(line)
 	return lista
 
+"""
+nombre_funcion(parametros) : breve descripcion
+Inputs:
+(tipo dato) descripcion
 
+Outputs:
+(tipo dato) descripcion
+
+"""
 def up_val(var,valor,tipo,VARS):
 	VARS[var] = [valor,tipo]
 	return VARS
 
+"""
+nombre_funcion(parametros) : breve descripcion
+Inputs:
+(tipo dato) descripcion
+
+Outputs:
+(tipo dato) descripcion
+
+"""
 def get_val_type(var,VARS):
 	if var not in VARS.keys():
 		return None
 	else:
 		return VARS[var][1]
 
+"""
+nombre_funcion(parametros) : breve descripcion
+Inputs:
+(tipo dato) descripcion
+
+Outputs:
+(tipo dato) descripcion
+
+"""
 def get_val_value(var,VARS):
 	if var not in VARS.keys():
 		return None
 	else:
 		return int(VARS[var][0])
+"""
+nombre_funcion(parametros) : breve descripcion
+Inputs:
+(tipo dato) descripcion
 
+Outputs:
+(tipo dato) descripcion
+
+"""
 def compar_types(var1,var2,VARS): ###
 	if VARS[var1][1] == VARS[var2][1]:
 		return True
 	else:
 		return False
+"""
+nombre_funcion(parametros) : breve descripcion
+Inputs:
+(tipo dato) descripcion
 
+Outputs:
+(tipo dato) descripcion
+
+"""
 def declaration(line,VARS): # En Desarrollo
 	obj = var_val.search(line)
 	if(obj):
@@ -405,7 +484,15 @@ def declaration(line,VARS): # En Desarrollo
 		up_val(obj.group(1),valor,obj.group(2),VARS)
 
 
+"""
+nombre_funcion(parametros) : breve descripcion
+Inputs:
+(tipo dato) descripcion
 
+Outputs:
+(tipo dato) descripcion
+
+"""
 def cast(var,tipo): ###
 	if var not in Variables.keys():
 		return False
