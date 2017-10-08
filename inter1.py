@@ -196,6 +196,18 @@ def declaration(line,VARS): # En Desarrollo
 		up_val(obj.group(1),valor,obj.group(2),VARS)
 		return  VARS
 
+	obj = var_func.search(line)
+
+	if obj:
+
+		varible = obj.group(1)
+		tipo =  obj.group(2)
+		nombre = obj.group(3)
+		argumento = obj.group(4)
+
+		leedor_fun(nombre,argumento,VARS)
+
+
 """
 nombre_funcion(parametros) : breve descripcion
 Inputs:
@@ -543,6 +555,8 @@ def cast(var,tipo): ###
 
 
 
+def leedor_fun(nombre,argumento,VARS):
+	print Funciones[nombre]
 
 
 def leedor_if():
@@ -703,8 +717,10 @@ for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden gener
 
 
 
-		else:
+
+
+		elif func.search(line):
 			store_fun(line,file)
-			print Funciones
+			
 
 
