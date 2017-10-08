@@ -5,6 +5,7 @@ ops= {"+": operator.add, "-": operator.sub} # ops["+"](1,1) = 1 + 1
 
 Variables = dict()  # Key -> nombre variable ; Value -> lista[tipo, valor] 
 Funciones = dict()  # Key -> nombre funcion; Value: lista[tipo variable entrada,tipo variable salida,sentencias]
+estate = dict()
 In_Fun = False
 In_While = False
 LET = "let mut"
@@ -117,11 +118,15 @@ Outputs:
 def declaration(line,VARS): # En Desarrollo
 	obj = var_val.search(line)
 	if(obj):
+
 		up_val(obj.group(1),obj.group(3),obj.group(2),VARS)
+
 		return VARS
+
 	obj = var_var.search(line)
 	if(obj):
 		lista = Variables[obj.group(3)]
+
 		if obj.group(2) == lista[1]:
 			up_val(obj.group(1),lista[0],obj.group(2),VARS)
 			return VARS
@@ -844,7 +849,13 @@ for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden gener
 				identificador = identifier(line)
 				if identificador == LET:
 
-					Variables = declaration(line,Variables)
+					estate = declaration(line,Variables)
+
+					if estate == None:
+						break
+					else:
+
+						Variables = estate
 
 				elif identificador == IF:
 					print "if"
@@ -864,3 +875,4 @@ for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden gener
 			
 
 
+print Variables
