@@ -303,20 +303,21 @@ def compar_types(var1,var2,VARS): ###
 	else:
 		return False
 
-def declaration(line): # En Desarrollo
+def declaration(line,VARS): # En Desarrollo
 	obj = var_val.search(line)
 	if(obj):
-		up_val(obj.group(1),obj.group(3),obj.group(2))
-		return True
+		up_val(obj.group(1),obj.group(3),obj.group(2),VARS)
+		return VARS
 	obj = var_var.search(line)
 	if(obj):
 		lista = Variables[obj.group(3)]
 		if obj.group(2) == lista[1]:
-			up_val(obj.group(1),lista[0],obj.group(2))
+			up_val(obj.group(1),lista[0],obj.group(2),VARS)
+			return VARS
 		else:
 			print "Error de tipo"#falta hacer que termine el programa
-			return False
-		return True
+			return None
+
 	obj = var_op.search(line)
 	if obj:
 		print "operacion"
