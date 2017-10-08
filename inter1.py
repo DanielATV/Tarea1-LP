@@ -71,6 +71,122 @@ fun_main = re.compile(r"fn\smain\(\)\s{")
 println = re.compile("println!\((\w+)\);")
 
 """
+identifier(line) : Busca que es lo que se intenta hacer, por ejemplo, definir una funcion.
+Inputs:
+(string) La linea que se esta leyendo del archivo.
+
+Outputs:
+(string) El match que tuvo.
+"""
+def identifier(line):
+	if LET in line:
+		return LET
+	elif WHILE in line:
+		return WHILE
+	elif IF in line:
+		return IF
+	elif ELSE in line:
+		return ELSE
+	elif RETURN in line:
+		return RETURN
+	elif FN in line:
+		return FN
+	elif END in line:
+		return END
+	elif PRINT in line:
+		return PRINT
+	else:
+		return SENT
+"""
+declaration(line,VARS) : 
+Inputs:
+(string): La linea que se esta leyendo del archivo.
+(diccionario): El diccionario de las variables del enterno en que se trabaja.
+
+Outputs:
+(None): En el caso que haya error de tipo.
+(diccionario): El diccionario actualizado con las declaraciones.
+
+"""
+def declaration(line,VARS): # En Desarrollo
+	obj = var_val.search(line)
+	if(obj):
+		up_val(obj.group(1),obj.group(3),obj.group(2),VARS)
+		return VARS
+	obj = var_var.search(line)
+	if(obj):
+		lista = Variables[obj.group(3)]
+		if obj.group(2) == lista[1]:
+			up_val(obj.group(1),lista[0],obj.group(2),VARS)
+			return VARS
+		else:
+			print "Error de tipo"#falta hacer que termine el programa
+			return None
+
+	obj = var_op.search(line)
+	if obj:
+		print "operacion"
+		if compar_types(obj.group(3),obj.group(5),VARS):
+			if get_val_type(obj.group(3).VARS) == ("i32" or "i16"):
+				valor = ops[obj.group(4)](int(obj.group(3)),int(obj.group(5)))
+				up_val(obj.group(1),valor,obj.group(2),VARS)
+				return VARS
+			else:
+				valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
+				up_val(obj.group(1),valor,obj.group(2),VARS)
+				return  VARS
+
+
+		else:
+			print "Error de tipo"
+			return None
+
+	obj = var_op_cast_cast.search(line)
+	if obj:
+
+		if compar_types(obj.group(3),obj.group(6),VARS):
+
+		
+			if get_val_type(obj.group(3),VARS) == ("i32" or "i16"):
+
+				valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3),VARS))),int(float(get_val_value(obj.group(6),VARS))))
+				up_val(obj.group(1),valor,obj.group(2),VARS)
+		
+			else:
+				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
+				up_val(obj.group(1),valor,obj.group(2),VARS)
+		else:
+			print "Error Tipo"
+		
+	#Faltan ver los checkeos de tipo
+	obj = var_op_valcasti_variable.search(line)
+	if obj:
+
+		valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3)))),int(float(get_val_value(obj.group(6)))))
+		up_val(obj.group(1),valor,obj.group(2),VARS)
+
+
+
+	obj = var_op_valcasti_valor.search(line)
+	if obj:
+
+		valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3)))),int(float(obj.group(6))))
+		up_val(obj.group(1),valor,obj.group(2),VARS)
+
+	obj = var_op_valcastd_valor.search(line)
+	if obj:
+
+		valor = ops[obj.group(5)](int(float(obj.group(3))),int(float(get_val_value(obj.group(6),VARS))))
+		up_val(obj.group(1),valor,obj.group(2),VARS)
+
+	obj = var_op_valcastd_variable.search(line)
+
+	if obj:
+
+		valor = ops[obj.group(4)](int(float(get_val_value(obj.group(3),VARS))),int(float(get_val_value(obj.group(5),VARS))))
+		up_val(obj.group(1),valor,obj.group(2),VARS)
+
+"""
 nombre_funcion(parametros) : breve descripcion
 Inputs:
 (tipo dato) descripcion
@@ -396,92 +512,6 @@ def compar_types(var1,var2,VARS): ###
 		return True
 	else:
 		return False
-"""
-nombre_funcion(parametros) : breve descripcion
-Inputs:
-(tipo dato) descripcion
-
-Outputs:
-(tipo dato) descripcion
-
-"""
-def declaration(line,VARS): # En Desarrollo
-	obj = var_val.search(line)
-	if(obj):
-		up_val(obj.group(1),obj.group(3),obj.group(2),VARS)
-		return VARS
-	obj = var_var.search(line)
-	if(obj):
-		lista = Variables[obj.group(3)]
-		if obj.group(2) == lista[1]:
-			up_val(obj.group(1),lista[0],obj.group(2),VARS)
-			return VARS
-		else:
-			print "Error de tipo"#falta hacer que termine el programa
-			return None
-
-	obj = var_op.search(line)
-	if obj:
-		print "operacion"
-		if compar_types(obj.group(3),obj.group(5),VARS):
-			if get_val_type(obj.group(3).VARS) == ("i32" or "i16"):
-				valor = ops[obj.group(4)](int(obj.group(3)),int(obj.group(5)))
-				up_val(obj.group(1),valor,obj.group(2),VARS)
-				return VARS
-			else:
-				valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
-				up_val(obj.group(1),valor,obj.group(2),VARS)
-				return  VARS
-
-
-		else:
-			print "Error de tipo"
-			return None
-
-	obj = var_op_cast_cast.search(line)
-	if obj:
-
-		if compar_types(obj.group(3),obj.group(6),VARS):
-
-		
-			if get_val_type(obj.group(3),VARS) == ("i32" or "i16"):
-
-				valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3),VARS))),int(float(get_val_value(obj.group(6),VARS))))
-				up_val(obj.group(1),valor,obj.group(2),VARS)
-		
-			else:
-				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
-				up_val(obj.group(1),valor,obj.group(2),VARS)
-		else:
-			print "Error Tipo"
-		
-	#Faltan ver los checkeos de tipo
-	obj = var_op_valcasti_variable.search(line)
-	if obj:
-
-		valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3)))),int(float(get_val_value(obj.group(6)))))
-		up_val(obj.group(1),valor,obj.group(2),VARS)
-
-
-
-	obj = var_op_valcasti_valor.search(line)
-	if obj:
-
-		valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3)))),int(float(obj.group(6))))
-		up_val(obj.group(1),valor,obj.group(2),VARS)
-
-	obj = var_op_valcastd_valor.search(line)
-	if obj:
-
-		valor = ops[obj.group(5)](int(float(obj.group(3))),int(float(get_val_value(obj.group(6),VARS))))
-		up_val(obj.group(1),valor,obj.group(2),VARS)
-
-	obj = var_op_valcastd_variable.search(line)
-
-	if obj:
-
-		valor = ops[obj.group(4)](int(float(get_val_value(obj.group(3),VARS))),int(float(get_val_value(obj.group(5),VARS))))
-		up_val(obj.group(1),valor,obj.group(2),VARS)
 
 
 """
@@ -500,33 +530,7 @@ def cast(var,tipo): ###
 
 
 
-"""
-identifier(line) : Busca que es lo que se intenta hacer, por ejemplo, definir una funcion.
-Inputs:
-(string) La linea que se esta leyendo del archivo.
 
-Outputs:
-(string) El match que tuvo.
-"""
-def identifier(line):
-	if LET in line:
-		return LET
-	elif WHILE in line:
-		return WHILE
-	elif IF in line:
-		return IF
-	elif ELSE in line:
-		return ELSE
-	elif RETURN in line:
-		return RETURN
-	elif FN in line:
-		return FN
-	elif END in line:
-		return END
-	elif PRINT in line:
-		return PRINT
-	else:
-		return SENT
 
 def leedor_if():
 	i = 0
