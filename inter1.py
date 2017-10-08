@@ -272,27 +272,13 @@ Outputs:
 (tipo dato) descripcion
 
 """
-def bool(line,VARS):
-	obj = while_sent.match(line)
-	if obj:	
-		var = obj.group(1)
-		cond = obj.group(2)
-		var2 = obj.group(3)
-	else:
-		obj = if_sent.match(line)
-		var = obj.group(1)
-		cond = obj.group(2)
-		var2 = obj.group(3)
+def bool(var,cond,var2,VARS):
 	if var2.isdigit():
 		var = get_val_value(var,VARS)
 		var2 = int(var2)
 	elif compar_types(var,var2,VARS) == True:
 		var = get_val_value(var,VARS)
 		var2 = get_val_value(var2,VARS)
-	else:
-		print("Error de tipos")
-		return False
-		
 	if cond == "<":
 		return var < var2
 	elif cond == ">":
