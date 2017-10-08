@@ -430,12 +430,13 @@ def store_fun(line,fp):
 	return True
 
 """
-nombre_funcion(parametros) : breve descripcion
+while_list(line,fp) : Guarda todo el ciclo while en una lista.
 Inputs:
-(tipo dato) descripcion
+(string): Linea que lee dl archivo
+(file object): Archivo que se esta leyendo.
 
 Outputs:
-(tipo dato) descripcion
+(lista) Lista con todas las senticas del while, siendo el primer elemento una tupla con el boleano a evaluar.
 
 """
 def while_list(line,fp):
@@ -447,10 +448,12 @@ def while_list(line,fp):
 	lista.append((var1,cond,var2))
 	llaves_abiertas = 1
 	for line in fp:
+		
 		line = line.strip("\n")
 		line = line.strip("\t")
+		print line
 		a = identifier(line)
-		print(llaves_abiertas)
+		
 		if llaves_abiertas <= 0:
 			break
 		if "}" in line:
@@ -586,14 +589,15 @@ file = open("codigo_rust1.txt", "r")
 
 
 for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden generar error en los compile
-	line = line.strip("\n")
-	print line
+	line = line.strip("\n").strip("\t")
+
 
 	identificador = identifier(line)
 	if identificador == FN:
 		if fun_main.search(line):
 			for line in file:
-				print line
+				line = line.strip("\n").strip("\t")
+
 				identificador = identifier(line)
 				if identificador == LET:
 
@@ -612,5 +616,5 @@ for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden gener
 		else:
 			store_fun(line,file)
 
-
+print ciclowhile
 
