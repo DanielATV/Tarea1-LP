@@ -256,6 +256,30 @@ def sentence(line,VARS):
 			print("Error de Tipo")
 			return False
 
+def store_fun(line,fp):
+	obj = func_main.match(line)
+	if obj:
+		return None
+	obj = func.match(line)
+	name_func = obj.group(1)
+	var_func = obj.group(2)
+	type_in = obj.group(3)
+	type_out = obj.group(4)
+	llaves_abiertas = 1
+	Funciones[name_func] = [(var_func,type_in,type_out)]
+	for line in fp:
+		line = line.strip("\n")
+		line = line.strip("\t")
+		a = identifier(line)
+		if llaves_abiertas == 0:
+			break
+		elif "{" in line:
+			llaves_abiertas = llaves_abiertas + 1
+		elif a == END:
+			llaves_abiertas = llaves_abiertas - 1
+		Funciones[name_func].append(line)
+	return True
+
 def up_val(var,valor,tipo,VARS):
 	VARS[var] = [valor,tipo]
 	return VARS
