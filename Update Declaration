@@ -1,0 +1,46 @@
+def declaration(line,VARS): # En Desarrollo
+	obj = var_val.search(line)
+	if(obj):
+		VARS = up_val(obj.group(1),obj.group(3),obj.group(2),VARS)
+		return VARS
+	obj = var_var.search(line)
+	if(obj):
+		lista = Variables[obj.group(3)]
+		if obj.group(2) == lista[1]:
+			VARS = up_val(obj.group(1),lista[0],obj.group(2),VARS)
+			return VARS
+		else:
+			print("Error de tipo") # Falta hacer que termine el programa
+			return False
+		return VARS
+	obj = var_op.search(line)
+	if obj:
+		print("operacion")
+		if compar_types(obj.group(3),obj.group(5)):
+			if get_val_type(obj.group(3)) == ("i32" or "i16"):
+				valor = ops[obj.group(4)](int(obj.group(3)),int(obj.group(5)))
+				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
+				return VARS
+			else:
+				valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
+				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
+				return VARS
+		else:
+			print("Error de tipo")
+	obj = var_op_cast_cast.search(line)
+	if obj:
+		if compar_types(obj.group(3),obj.group(6)):
+			if get_val_type(obj.group(3)) == ("i32" or "i16"):
+				valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3)))),int(float(get_val_value(obj.group(6)))))
+				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
+				return VARS
+			else:
+				valor = ops[obj.group(5)](float(get_val_value(obj.group(3))),float(get_val_value(obj.group(6))))
+				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
+				return VARS
+		else:
+			print("Error de tipo")	
+	obj = var_op_valcasti.search(line)
+	if obj:
+		print(obj.groups())
+	obj = sent_op_valcastd.search(line)
