@@ -136,7 +136,7 @@ def declaration(line,VARS): # En Desarrollo
 
 	obj = var_op.search(line)
 	if obj:
-		print "operacion"
+
 		if compar_types(obj.group(3),obj.group(5),VARS):
 			if get_val_type(obj.group(3).VARS) == ("i32" or "i16"):
 				valor = ops[obj.group(4)](int(obj.group(3)),int(obj.group(5)))
@@ -176,9 +176,15 @@ def declaration(line,VARS): # En Desarrollo
 
 		if obj.group(4) == get_val_type(obj.group(6),VARS):
 
-			valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3),VARS))),int(float(get_val_value(obj.group(6),VARS))))
-			up_val(obj.group(1),valor,obj.group(2),VARS)
-			return  VARS
+			if obj.group(2) == ("i32" or "i16"):				
+
+				valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3),VARS))),int(float(get_val_value(obj.group(6),VARS))))
+				up_val(obj.group(1),valor,obj.group(2),VARS)
+				return  VARS
+			else:
+				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
+				up_val(obj.group(1),valor,obj.group(2),VARS)
+				return  VARS
 		else:
 			print "Error tipo"
 			return None
