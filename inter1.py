@@ -271,12 +271,13 @@ def store_fun(line,fp):
 		line = line.strip("\n")
 		line = line.strip("\t")
 		a = identifier(line)
-		if llaves_abiertas == 0:
+		print(llaves_abiertas)
+		if llaves_abiertas <= 0:
 			break
-		elif "{" in line:
-			llaves_abiertas = llaves_abiertas + 1
-		elif a == END:
+		if "}" in line:
 			llaves_abiertas = llaves_abiertas - 1
+		if "{" in line:
+			llaves_abiertas = llaves_abiertas + 1
 		Funciones[name_func].append(line)
 	return True
 
