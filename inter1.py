@@ -575,19 +575,48 @@ def leedor_while(listawhile,VARS):
 	operacion = listawhile[0][1]
 	operando = listawhile[0][2]
 
-	print variable, operacion, operando
-
 	obj = ind_var.search(operando)
 
 	if obj:
+		derecha = get_val_value(operando,VARS)
+		izquierda = get_val_value(variable,VARS)
 
-		 derecha = get_val_value(operando,VARS)
-		 izquierda = get_val_value(variable,VARS)
-
-		 if operacion == "<":
-		 	while int(izquierda) < int(derecha):
+		if operacion == "<":
+			while int(izquierda) < int(derecha):
 		 		for sent in listawhile[1:]:
-		 			print sent
+		 			
+		 			sentence(sent,VARS)
+		 			izquierda = get_val_value(variable,VARS)
+		 			derecha = get_val_value(operando,VARS)
+
+		elif operacion == ">":
+			while int(izquierda) > int(derecha):
+		 		for sent in listawhile[1:]:
+		 			
+		 			sentence(sent,VARS)
+		 			izquierda = get_val_value(variable,VARS)
+		 			derecha = get_val_value(operando,VARS)
+
+		elif operacion == "=":
+		 	while int(izquierda) == int(derecha):
+		 		for sent in listawhile[1:]:
+		 			
+		 			sentence(sent,VARS)
+		 			izquierda = get_val_value(variable,VARS)
+		 			derecha = get_val_value(operando,VARS)
+
+		elif operacion == ">=":
+		 	while int(izquierda) >= int(derecha):
+		 		for sent in listawhile[1:]:
+		 			
+		 			sentence(sent,VARS)
+		 			izquierda = get_val_value(variable,VARS)
+		 			derecha = get_val_value(operando,VARS)
+
+		elif operacion == "<=":
+		 	while int(izquierda) <= int(derecha):
+		 		for sent in listawhile[1:]:
+		 			
 		 			sentence(sent,VARS)
 		 			izquierda = get_val_value(variable,VARS)
 		 			derecha = get_val_value(operando,VARS)
@@ -599,13 +628,37 @@ def leedor_while(listawhile,VARS):
 		if operacion == "<":
 			while izquierda < int(operando):
 				for sent in listawhile[1:]:
-					print sent
+					
 		 			sentence(sent,VARS)
 		 			izquierda = get_val_value(variable,VARS)
 
+		elif operacion == ">":
+			while izquierda > int(operando):
+				for sent in listawhile[1:]:
+					
+		 			sentence(sent,VARS)
+		 			izquierda = get_val_value(variable,VARS)
 
+		elif operacion == "=":
+			while izquierda == int(operando):
+				for sent in listawhile[1:]:
+					
+		 			sentence(sent,VARS)
+		 			izquierda = get_val_value(variable,VARS)
 
+		elif operacion == ">=":
+			while izquierda >= int(operando):
+				for sent in listawhile[1:]:
+					
+		 			sentence(sent,VARS)
+		 			izquierda = get_val_value(variable,VARS)
 
+		elif operacion == "<=":
+			while izquierda <= int(operando):
+				for sent in listawhile[1:]:
+					
+		 			sentence(sent,VARS)
+		 			izquierda = get_val_value(variable,VARS)
 
 
 
