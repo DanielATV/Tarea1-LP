@@ -21,7 +21,7 @@ PRINT = "println!"
 
 var_val = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([0-9]+(.[0-9]+)?);")
 var_var = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([A-z]+);")
-var_func = re.compile("let mut\s(\w*)\s:\s(i16|i32|f64)\s=\s(\w*)\((\d)\);")
+var_func = re.compile("let mut\s(\w*)\s:\s(i16|i32|f64)\s=\s(\w*)\((\w+)\);")
 var_op = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*([0-9]+)\s*(\+|\-)\s*([0-9]+);")
 var_op_cast_cast = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\);")
 var_op_valcasti_variable = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s([A-z]+);")
@@ -206,7 +206,6 @@ def declaration(line,VARS): # En Desarrollo
 		argumento = obj.group(4)
 
 		leedor_fun(nombre,argumento,VARS)
-
 
 """
 nombre_funcion(parametros) : breve descripcion
@@ -681,7 +680,14 @@ def cast(var,tipo): ###
 
 
 def leedor_fun(nombre,argumento,VARS):
-	print Funciones[nombre]
+	varibles_fun=dict()
+
+	if argumento in VARS.keys():
+		print VARS[argumento]
+	else:
+		
+		print Funciones[nombre]
+
 
 
 def leedor_if():
@@ -809,6 +815,7 @@ def leedor_while(listawhile,VARS):
 					
 		 			sentence(sent,VARS)
 		 			izquierda = get_val_value(variable,VARS)
+
 
 
 
