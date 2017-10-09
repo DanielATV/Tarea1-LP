@@ -1,8 +1,4 @@
 import re
-import operator
-
-ops= {"+": operator.add, "-": operator.sub} # ops["+"](1,1) = 1 + 1 
-
 
 Variables = dict()  # Key -> Variable ; Value -> [valor, tipo] 
 Funciones = dict()  #
@@ -731,7 +727,7 @@ def declaration(line,VARS): # En Desarrollo
 			return VARS
 		elif compar_types(obj.group(3),obj.group(5),VARS):
 			if get_val_type(obj.group(3),VARS) in ["i32","i16"]:
-				valor = ops[obj.group(4)](int(obj.group(3)),int(obj.group(5)))
+				valor = operation(obj.group(3)+obj.group(4)+obj.group(5),VARS)
 				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
 				return VARS
 			else:
@@ -790,7 +786,6 @@ def get_val_value(var,VARS):
 	return int(VARS[var][0])
 
 def operation(line,VARS):
-	print(line)
 	obj = op_sc.match(line)
 	if (obj):
 		var = obj.group(1)
@@ -798,15 +793,54 @@ def operation(line,VARS):
 		var2 = obj.group(3)
 		if (var.isdigit() or isfloat(var)) and (var2.isdigit() or isfloat(var2)):
 			if op == "+":
-				return float(var) + float(var2)
+				return str(float(var) + float(var2))
+			else:
+				return str(float(var) - float(var2))
+		elif var.isdigit() or isfloat(var):
+			if VARS[var2][1] in ["i16","i32"]:
+				if op == "+":
+					return str(int(var) + int(VARS[var2][0]))
+				else:
+					return str(int(var) - int(VARS[var2][0]))
+			else:
+				if op == "+":
+					return str(float(var) + float(VARS[var2][0]))
+				else:
+					return str(float(var) - float(VARS[var2][0]))
+		elif var2.isdigit() or isfloat(var):
+			if VARS[var][1] in ["i16","i32"]:
+				if op == "+":
+					return str(int(var2) + int(VARS[var][0]))
+				if op == "-":
+					return str(int(VARS[var][0]) - int(var2))
+			else:
+				if op == "+":
+					return str(float(var2) + float(VARS[var][0]))
+				if op == "-":
+					return str(float(VARS[var][0]) - float(var2))
+		elif var in VARS.keys() and var2 in VARS.keys():
+			if compar_types(var,var2,VARS):
+				if VARS[var][1] in ["i16","i32"] and VARS[var2][1] in ["i16","i32"]:
+					if op == "+":
+						return str(int(VARS[var][0]) + int(VARS[var2][0]))
+					if op == "-":
+						return str(int(VARS[var][0]) - int(VARS[var2][0]))
+				elif VARS[var][1] == "f64" and VARS[var2][1] == "f64":
+					if op == "+":
+						return str(float(VARS[var][0]) + float(VARS[var2][0]))
+					if op == "-":
+						return str(float(VARS[var][0]) - float(VARS[var2][0]))
+			else:
+				print("Error de Tipos")
+				exit(1)
+
 		else:
-			print("Variable "+obj.group(1)+" no declarada")
+			print("Variable "+var+" o "+var2+" no declarada")
 			return exit(1)
 
-	obj = sent_func.match(line)
-
-	if (obj):# Falta La funcion que ejecuta las funciones para llamarla aca
-		pass 
+	obj = op.match(line)
+	if (obj):  # Falta La funcion que ejecuta las funciones para llamarla aca
+		pass
 
 	obj = sent_var.match(line)
 	if (obj):
