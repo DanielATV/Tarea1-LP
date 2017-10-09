@@ -51,7 +51,7 @@ retorno_opsc = re.compile("return\s(\w*|\d*)\s*(\+|\-)\s(\w*|\d*);")
 retorno_ci = re.compile("return\s(\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*));")
 retorno_cd = re.compile("return\s(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
 retorno_dc = re.compile("return\s\((\w+)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\w*)+\sas\s*(i16|i32|f64)\);")
-func = re.compile("fn\s*(\w*)\((\w*):\s(i16|i32|f64)+\)\s*->\s*(i16|i32|f64)+{")
+func = re.compile("fn\s*(\w*)\((\w*)\s*:\s*(i16|i32|f64)+\)\s*->\s*(i16|i32|f64)\s*{"
 func_main = re.compile("fn main\(\)\s*{")
 print_ln = re.compile("println!\s*\((\w+)\);")
 
