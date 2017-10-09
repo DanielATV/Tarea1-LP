@@ -55,6 +55,19 @@ func = re.compile("fn\s*(\w*)\((\w*):\s(i16|i32|f64)+\)\s*->\s*(i16|i32|f64)+{")
 func_main = re.compile("fn main\(\)\s*{")
 print_ln = re.compile("println!\s*\((\w+)\);")
 
+
+"""
+if_exec_static(line,lista,VARS): Ejecuta los ifs dentro de las funciones.
+Inputs:
+(string): Linea que lee del archivo.
+(lista): Lista con todas las sentencias del if.
+(diccionario): Diccionario con las variables del ambito.
+..
+Outputs:
+(diccionario): Diccionario varibles actualizado.
+(lista): Lista con sentencias hasta donde se ejecuto.
+
+"""
 def if_exec_static(line,lista,VARS):
 	llaves_abiertas = 1
 	COND = False
@@ -178,6 +191,17 @@ def if_exec_static(line,lista,VARS):
 	print("-------------- Saliendo If --------------")
 	return VARS,lista
 
+
+"""
+while_list_static(line,lista) : Crea una lista con las sentencias del while.
+Inputs:
+(string): Linea del archivo.
+(list): Lista sentencias de la funcion.
+..
+Outputs:
+(list): Lista con las sentencias del while.
+..
+"""
 def while_list_static(line,lista):
 	obj = while_sent.match(line)
 	var1 = obj.group(1)
@@ -211,6 +235,18 @@ def while_list_static(line,lista):
 			break
 	return lista_while
 
+"""
+exe_while_static(lista_while,lista,VARS) : Ejecuta el ciclo while dentro de la funcion.
+Inputs:
+(list): Lista con las sentencias del while.
+(list): Lista de sentencias por leer de la funcion.
+(dict): Diccionaro con las variables del ambito.
+..
+Outputs:
+(list): Lista con las sentencias que faltan por leer de la funcion.
+(var): Diccionario con las variables actualizadas.
+
+"""
 def exe_while_static(lista_while,lista,VARS):
 	Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
 	print("While a ejecutar --> ",lista)
@@ -239,6 +275,16 @@ def exe_while_static(lista_while,lista,VARS):
 			break
 	return VARS,lista
 
+"""
+def exe_while(lista_while,fp,VARS):  Ejecuta el ciclo while dentro del main.
+Inputs:
+(list): Lista con la sentencias del while.
+(file obj): Archivo que se esta leyendo.
+(dict):  Diccionario con las variables del ambito.
+..
+Outputs:
+(dict): Diccionario varibles actualizadas.
+"""
 def exe_while(lista_while,fp,VARS):
 	Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
 	while Flag:
@@ -260,8 +306,20 @@ def exe_while(lista_while,fp,VARS):
 		print("Final ciclo while")
 		Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
 		if Flag == False:
-			break
 
+			break
+"""
+bool(var,cond,var2,VARS): Evalua si es verdadero o falso la expresion.
+Inputs:
+(string): Variable.
+(string): Variable o valor.
+(dict): Diccinario de las variables del ambito.
+..
+Outputs:
+(boolean): False si no se cumple.
+(boolean): True si se cumple.
+
+"""
 def bool(var,cond,var2,VARS):
 	if var2.isdigit():
 		var = get_val_value(var,VARS)
