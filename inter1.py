@@ -189,20 +189,15 @@ def declaration(line,VARS): # En Desarrollo
 	obj = var_op.search(line)
 	if obj:
 
-		if compar_types(obj.group(3),obj.group(5),VARS):
-			if get_val_type(obj.group(3).VARS) in ["i32","i16"]:
-				valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
-				up_val(obj.group(1),int(valor),obj.group(2),VARS)
-				return VARS
-			else:
-				valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
-				up_val(obj.group(1),valor,obj.group(2),VARS)
-				return  VARS
-
-
+		if obj.group(2) in ["i32","i16"]:
+			valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
+			up_val(obj.group(1),int(valor),obj.group(2),VARS)
+			return VARS
 		else:
-			print "Error de tipo"
-			return None
+			valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
+			up_val(obj.group(1),valor,obj.group(2),VARS)
+			return  VARS
+
 
 	obj = var_op_cast_cast.search(line)
 	if obj:
