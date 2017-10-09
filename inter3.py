@@ -88,6 +88,39 @@ def identifier(line):
 		return PRINT
 	else:
 		return SENT
+	
+"""
+ret_fun(line,tipo,VARS) : 
+Inputs:
+(string): La linea que se esta leyendo del archivo.
+(string): El tipo de dato que se retorna
+(diccionario): El diccionario de las variables del enterno en que se trabaja.
+
+Outputs:
+(string): El resultado de la operacion en forma de string
+
+"""
+def ret_fun(line,tipo,VARS):
+	obj = retorno_var_val.match(line)
+	if obj:
+		var = obj.group(1)
+		if var.isdigit():
+			return var
+		else:
+			var = VARS[var]
+			return var
+	obj = retorno_opsc.match(line)
+	if obj:
+		return operation(line,VARS)
+	obj = retorno_cd
+	if obj:
+		return operation(line,VARS)
+	obj = retorno_ci
+	if obj:
+		return operation(line,VARS)
+	obj = retorno_dc
+	if obj:
+		return operation(line,VARS)
 
 def if_exec_static(line,lista,VARS):
 	llaves_abiertas = 1
@@ -1178,27 +1211,6 @@ def exe_func(nombre,val,VARS):
 			return ret_fun(line,Funciones[nombre][0][1],VARS_Local)
 
 
-def ret_fun(line,tipo,VARS):
-	obj = retorno_var_val.match(line)
-	if obj:
-		var = obj.group(1)
-		if var.isdigit():
-			return var
-		else:
-			var = VARS[var]
-			return var
-	obj = retorno_opsc.match(line)
-	if obj:
-		return operation(line,VARS)
-	obj = retorno_cd
-	if obj:
-		return operation(line,VARS)
-	obj = retorno_ci
-	if obj:
-		return operation(line,VARS)
-	obj = retorno_dc
-	if obj:
-		return operation(line,VARS)
 
 def main():
 	fp = open("codigo_rust.txt","r")
