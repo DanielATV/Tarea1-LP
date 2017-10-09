@@ -24,6 +24,7 @@ var_val = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\d+);")
 var_var = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w+);")
 var_func = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\((\w*)\);")
 var_op = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w+)\s*(\+|\-)\s*(\w+);")
+var_op_sc = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s*(\w*)\s*;")
 var_op_cast = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\);")
 var_op_valcasti = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s(\w*);")
 var_op_valcastd = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
@@ -704,52 +705,137 @@ def int_to_float(var,VARS):
 	var = VARS[var][0]+".0"
 	return var
 
-def declaration(line,VARS): # En Desarrollo
+def declaration(line,VARS):
 	obj = var_val.search(line)
 	if(obj):
-		VARS = up_val(obj.group(1),obj.group(3),obj.group(2),VARS)
-		return VARS
-	obj = var_var.search(line)
-	if(obj):
-		lista = VARS[obj.group(3)]
-		if obj.group(2) == lista[1]:
-			VARS = up_val(obj.group(1),lista[0],obj.group(2),VARS)
+
+		if obj.group(2) in ["i32","i16"]:
+
+			up_val(obj.group(1),int(float(obj.group(3))),obj.group(2),VARS)
+
 			return VARS
 		else:
-			print("Error de tipo") # Falta hacer que termine el programa
-			return False
-		return VARS
+
+			up_val(obj.group(1),float(obj.group(3)),obj.group(2),VARS)
+
+			return VARS
+
+
+	obj = var_var.search(line)
+	if(obj):
+		lista = Variables[obj.group(3)]
+
+		if obj.group(2) == lista[1]:
+			up_val(obj.group(1),lista[0],obj.group(2),VARS)
+			return VARS
+		else:
+			print "Error de tipo"#falta hacer que termine el programa
+			return None
+
 	obj = var_op.search(line)
 	if obj:
-		print("operacion")
-		if compar_types(obj.group(3),obj.group(5)):
-			if get_val_type(obj.group(3)) == ("i32" or "i16"):
-				valor = ops[obj.group(4)](int(obj.group(3)),int(obj.group(5)))
-				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
-				return VARS
-			else:
-				valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
-				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
-				return VARS
+
+		if obj.group(2) in ["i32","i16"]:
+			valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
+			up_val(obj.group(1),int(valor),obj.group(2),VARS)
+			return VARS
 		else:
-			print("Error de tipo")
+			valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
+			up_val(obj.group(1),valor,obj.group(2),VARS)
+			return  VARS
+
+
 	obj = var_op_cast_cast.search(line)
 	if obj:
-		if compar_types(obj.group(3),obj.group(6)):
-			if get_val_type(obj.group(3)) == ("i32" or "i16"):
-				valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3)))),int(float(get_val_value(obj.group(6)))))
-				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
-				return VARS
+
+		if compar_types(obj.group(3),obj.group(6),VARS):
+
+		
+			if get_val_type(obj.group(3),VARS) in ["i32","i16"]:
+
+				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
+				up_val(obj.group(1),int(valor),obj.group(2),VARS)
+		
 			else:
-				valor = ops[obj.group(5)](float(get_val_value(obj.group(3))),float(get_val_value(obj.group(6))))
-				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
-				return VARS
+				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
+				up_val(obj.group(1),valor,obj.group(2),VARS)
 		else:
-			print("Error de tipo")	
-	obj = var_op_valcasti.search(line)
+			print "Error Tipo"
+			return None
+		
+	obj = var_op_valcasti_variable.search(line)
 	if obj:
-		obj = sent_op_valcastd.search(line)
+
+
+		if obj.group(4) == get_val_type(obj.group(6),VARS):
+
+			if obj.group(2) in ["i32","i16"]:				
+
+				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
+				up_val(obj.group(1),int(valor),obj.group(2),VARS)
+				return  VARS
+			else:
+				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
+				up_val(obj.group(1),valor,obj.group(2),VARS)
+				return  VARS
+		else:
+			print "Error tipo"
+			return None
+
+
+
+	obj = var_op_valcasti_valor.search(line)
+	if obj:
+	
+		if obj.group(2) in ["i32","i16"]:
+
+			valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(obj.group(6)))
+			up_val(obj.group(1),int(valor),obj.group(2),VARS)
+			return  VARS
+
+		else:
+			valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(obj.group(6)))
+			up_val(obj.group(1),valor,obj.group(2),VARS)
+			return  VARS
+
+	obj = var_op_valcastd_valor.search(line)
+	if obj:
+
+		if obj.group(2) in ["i32","i16"]:
+
+			valor = ops[obj.group(5)](float(obj.group(3)),float(get_val_value(obj.group(6),VARS)))
+			up_val(obj.group(1),int(valor),obj.group(2),VARS)
+			return  VARS
+
+		else:
+
+			valor = ops[obj.group(5)](float(obj.group(3)),float(get_val_value(obj.group(6),VARS)))
+			up_val(obj.group(1),valor,obj.group(2),VARS)
+			return  VARS
+
+	obj = var_op_valcastd_variable.search(line)
+
+	if obj:
+
+		if obj.group(6) == get_val_type(obj.group(3),VARS):
+
+			if obj.group(2) in ["i32","i16"]:	
+
+				valor = ops[obj.group(4)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(5),VARS)))
+				up_val(obj.group(1),int(valor),obj.group(2),VARS)
+				return  VARS
+
+			else:
+				valor = ops[obj.group(4)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(5),VARS)))
+				up_val(obj.group(1),valor,obj.group(2),VARS)
+				return  VARS
+
+		else:
+			print "Error de tipo"
+			return None
+
 	obj = var_func.match(line)
+	
 	if obj:
 		var = obj.group(1)
 		tipo = obj.group(2)
@@ -760,6 +846,36 @@ def declaration(line,VARS): # En Desarrollo
 
 	print("No Definido")
 	exit(1)
+
+
+	obj = var_op_sc.search(line)
+	if obj:
+
+
+		if compar_types(obj.group(3),obj.group(5),VARS):
+			
+			if get_val_type(obj.group(3),VARS) in ["i32","i16"]:
+
+				valor = ops[obj.group(4)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(5),VARS)))
+				up_val(obj.group(1),int(valor),obj.group(2),VARS)
+
+				return VARS
+
+			else :
+
+				valor = ops[obj.group(4)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(5),VARS)))
+				up_val(obj.group(1),valor,obj.group(2),VARS)
+
+				return VARS
+
+		else:
+			print "Error de tipo"
+			return None
+		
+
+	else:
+		print "Error"
+		return None
 
 def up_val(var,valor,tipo,VARS):
 	VARS[var] = [valor,tipo]
