@@ -17,7 +17,7 @@ END = "}"
 PRINT = "println!"
 
 
-var_val = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\d+);")
+var_val = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\d*|\d*\.\d*);")
 var_var = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w+);")
 var_func = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\((\w*)\);")
 var_op = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w+)\s*(\+|\-)\s*(\w+);")
@@ -707,19 +707,27 @@ def int_to_float(var,VARS):
 def declaration(line,VARS): # En Desarrollo
 	obj = var_val.search(line)
 	if(obj):
-		VARS = up_val(obj.group(1),obj.group(3),obj.group(2),VARS)
+		var = obj.group(1)
+		tipo = obj.group(2) 
+		var2 = obj.group(3)
+		if isfloat(var2) and tipo in ["i16","i32"]:
+			print("Error de Tipo")
+			exit(1)
+		else:
+			VARS[var] = [var2,tipo]
+			
 		return VARS
 	obj = var_var.search(line)
 	if(obj):
-		print(obj.groups())
-		lista = VARS[obj.group(3)]
-		if obj.group(2) == lista[1]:
-			VARS[obj.group(1)] = 1
+		var = obj.group(1)
+		tipo = obj.group(2) 
+		var2 = obj.group(3)
+		if VARS[var2][1] == tipo:
+			VARS[var] = [VARS[var2][0],tipo]
 			return VARS
 		else:
-			print("Error de tipo") # Falta hacer que termine el programa
-			return False
-		return VARS
+			print("Error de Tipo")
+			exit(1)
 	obj = var_op.search(line)
 	if obj:
 		if (obj.group(3).isdigit() or isfloat(obj.group(3))) and (obj.group(5).isdigit() or isfloat(obj.group(5))):
@@ -730,12 +738,13 @@ def declaration(line,VARS): # En Desarrollo
 				valor = operation(obj.group(3)+obj.group(4)+obj.group(5),VARS)
 				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
 				return VARS
-			else:
+			elif VARS[obj.group(3)][1]=="f64" and VARS[obj.group(3)][1]=="f64":
 				valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
 				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
 				return VARS
 		else:
 			print("Error de tipo")
+			exit(1)
 	obj = var_op_cast_cast.search(line)
 	if obj:
 		if compar_types(obj.group(3),obj.group(6)):
@@ -772,6 +781,7 @@ def compar_types(var1,var2,VARS): ###
 	if VARS[var1][1] == VARS[var2][1]:
 		return True
 	else:
+		print("Error de tipo")
 		return exit(1)
 
 def cast(var,tipo,VARS): ###
@@ -1085,7 +1095,7 @@ def ret_fun(line,tipo,VARS):
 		return operation(line,VARS)
 
 def main():
-	fp = open("codigo_rust.txt","r")
+	fp = open("codigo_rust2.txt","r")
 	i = 1
 	DIC = dict()
 	for line in fp:
