@@ -220,6 +220,7 @@ def declaration(line,VARS): # En Desarrollo
 				up_val(obj.group(1),valor,obj.group(2),VARS)
 		else:
 			print "Error Tipo"
+			return None
 		
 	obj = var_op_valcasti_variable.search(line)
 	if obj:
@@ -275,7 +276,6 @@ def declaration(line,VARS): # En Desarrollo
 
 	if obj:
 
-		print obj.groups()
 		if obj.group(6) == get_val_type(obj.group(3),VARS):
 
 			if obj.group(2) in ["i32","i16"]:	
@@ -310,7 +310,28 @@ def declaration(line,VARS): # En Desarrollo
 
 	obj = var_op_sc.search(line)
 	if obj:
-		print "asd"
+
+
+		if compar_types(obj.group(3),obj.group(5),VARS):
+			
+			if get_val_type(obj.group(3),VARS) in ["i32","i16"]:
+
+				valor = ops[obj.group(4)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(5),VARS)))
+				up_val(obj.group(1),int(valor),obj.group(2),VARS)
+
+				return VARS
+
+			else :
+
+				valor = ops[obj.group(4)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(5),VARS)))
+				up_val(obj.group(1),valor,obj.group(2),VARS)
+
+				return VARS
+
+		else:
+			print "Error de tipo"
+			return None
+		
 
 	else:
 		print "Error"
