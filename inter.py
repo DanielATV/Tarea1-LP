@@ -1,4 +1,7 @@
 import re
+import operator
+
+ops= {"+": operator.add, "-": operator.sub} # ops["+"](1,1) = 1 + 1
 
 Variables = dict()  # Key -> Variable ; Value -> [valor, tipo] 
 Funciones = dict()  #
@@ -481,7 +484,7 @@ def sentence(line,VARS):
 					VARS[obj.group(1)][0] = str(int(var) - int(var2))
 					return VARS
 			elif var.isdigit():
-				if not compar_types(obj.group(1),var2):
+				if not compar_types(obj.group(1),var2,VARS):
 					print("Error de tipos")
 					return exit(1)
 				var2 = get_val_value(var2,VARS)
@@ -837,7 +840,11 @@ def get_val_type(var,VARS):
 		return VARS[var][1]
 
 def get_val_value(var,VARS):
-	return int(VARS[var][0])
+    if VARS[var][0].isdigit():
+        return int(VARS[var][0])
+    else:
+        return float(VARS[var][0])
+
 
 def operation(line,VARS):
 	obj = op_sc.match(line)
