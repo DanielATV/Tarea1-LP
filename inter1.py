@@ -159,7 +159,7 @@ Outputs:
 (diccionario): El diccionario actualizado con las declaraciones.
 
 """
-def declaration(line,VARS): # En Desarrollo
+def declaration(line,VARS):
 	obj = var_val.search(line)
 	if(obj):
 
@@ -288,20 +288,19 @@ def declaration(line,VARS): # En Desarrollo
 			print "Error de tipo"
 			return None
 
-	obj = var_func.search(line)
-
+	obj = var_func.match(line)
+	
 	if obj:
-
-
-		variable = obj.group(1)
-		tipo =  obj.group(2)
-		nombre = obj.group(3)
-		argumento = obj.group(4)
-
-		retorno = leedor_fun(nombre,argumento,VARS)
-		print retorno
-		up_val(variable,retorno,tipo,VARS)
+		var = obj.group(1)
+		tipo = obj.group(2)
+		func = obj.group(3)
+		var2 = obj.group(4)
+		VARS[var] = [exe_func(func,var2,VARS),tipo]
 		return VARS
+
+	print("No Definido")
+	exit(1)
+
 
 	obj = var_op_sc.search(line)
 	if obj:
