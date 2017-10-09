@@ -543,7 +543,18 @@ def println(line,VARS):
 	type_var = VARS[var][1]
 	print("El valor es: "+var+". Su tipo es: "+type_var)
 
+"""
+Store_fun(line,fp) : Guarda la funcion en un diccionario. 
+Inputs:
 
+(string): Linea que lee del archivo.
+(file object): Archivo que se esta leyendo.
+
+Outputs:
+(None): Si es la funcion main no la guarda.
+(True): Si guarda la funcion con exito.
+
+"""
 def store_fun(line,fp):
 	obj = func_main.match(line)
 	if obj:
