@@ -806,33 +806,6 @@ def leedor_fun(nombre,argumento,VARS):
 			print sent
 			#sentence(sent,varibles_fun)
 
-
-
-def leedor_if():
-	i = 0
-	while True:
-		line = file.readline().strip("\n")
-		if end_if.search(line) and len(line) == 2:
-			break
-		elif elseif_sent.search(line):#falta probarlo
-			print "else if"
-		elif else_sent.search(line):
-			print "else"
-		'''
-		elif declarar
-		elif asginar
-		elif operaciones
-		elif pr1nt
-		elif funcion
-		elif retorn
-		elif while
-		elif if
-		'''
-
-
-		i += 1
-	print i
-
 """
 leedor_while(listawhile,VARS) : Construye el while que se le entrega como lista.
 Inputs:
