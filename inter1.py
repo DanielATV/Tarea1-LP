@@ -69,7 +69,7 @@ retorno_dc = re.compile("return\s\((\w+)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\
 #Funciones
 
 func = re.compile("fn\s*(\w*)\((\w)\s*:\s*(i16|i32|f64)\)\s*->\s*(i16|i32|f64)\s*{")
-func_main = re.compile(r"fn\smain\(\)\s{")
+func_main = re.compile("fn\s*main\(\)\s*{")
 
 #Print
 
@@ -125,6 +125,7 @@ Outputs:
 
 	
 def ret_fun(line,tipo,VARS):
+
 	obj = retorno_var_val.match(line)
 	if obj:
 		var = obj.group(1)
@@ -219,7 +220,6 @@ def declaration(line,VARS): # En Desarrollo
 		else:
 			print "Error Tipo"
 		
-	#Faltan ver los checkeos de tipo
 	obj = var_op_valcasti_variable.search(line)
 	if obj:
 
@@ -296,12 +296,17 @@ def declaration(line,VARS): # En Desarrollo
 
 	if obj:
 
-		varible = obj.group(1)
+
+		variable = obj.group(1)
 		tipo =  obj.group(2)
 		nombre = obj.group(3)
 		argumento = obj.group(4)
 
-		leedor_fun(nombre,argumento,VARS)
+		retorno = leedor_fun(nombre,argumento,VARS)
+		print retorno
+		up_val(variable,retorno,tipo,VARS)
+		return VARS
+
 
 """
 nombre_funcion(parametros) : breve descripcion
@@ -797,14 +802,15 @@ def leedor_fun(nombre,argumento,VARS):
 		up_val(Funciones[nombre][0][0],VARS[argumento][0],Funciones[nombre][0][1],varibles_fun)
 
 		for sent in Funciones[nombre][1:]:
-			print sent
+			return sent_retorno(sent,varibles_fun)
+		
 	else:
 		
 		up_val(Funciones[nombre][0][0],argumento,Funciones[nombre][0][1],varibles_fun)
 
 		for sent in Funciones[nombre][1:]:
-			print sent
-			#sentence(sent,varibles_fun)
+			return  sent_retorno(sent,varibles_fun)
+
 
 """
 leedor_while(listawhile,VARS) : Construye el while que se le entrega como lista.
@@ -837,9 +843,11 @@ def println(line,VARS):
 	print("El valor es: "+var+". Su tipo es: "+type_var)
 
 def operation(line,VARS):
-	obj = sent_op.match(line)
+
+	obj = retorno_opsc.match(line)
 	if (obj):
-		if obj.group(1) in VARS.keys():
+
+		if obj.group(2) in VARS.keys():
 			var = obj.group(2)
 			op = obj.group(3)
 			var2 = obj.group(4)
@@ -890,6 +898,7 @@ def operation(line,VARS):
 
 	obj = sent_var.match(line)
 	if (obj):
+
 		var = obj.group(1)
 		var2 = obj.group(2)
 		if var in VARS.keys() and var2 in VARS.keys():
@@ -903,6 +912,7 @@ def operation(line,VARS):
 	
 	obj = sent_val.match(line)
 	if (obj):
+
 		var = obj.group(1)
 		val = obj.group(2)
 		if var not in VARS.keys():
@@ -912,6 +922,7 @@ def operation(line,VARS):
 	
 	obj = sent_op_cast.match(line)
 	if (obj):
+
 		var = obj.group(1)
 		var2 = obj.group(2)
 		cast = obj.group(3)
@@ -926,6 +937,7 @@ def operation(line,VARS):
 
 	obj = sent_op_valcastd.match(line)
 	if (obj):
+
 		var = obj.group(1)
 		var2 = obj.group(2)
 		op = obj.group(3)
@@ -948,6 +960,7 @@ def operation(line,VARS):
 
 	obj = sent_op_valcasti.match(line)
 	if (obj):
+
 		var = obj.group(1)
 		var2 = obj.group(2)
 		cast = obj.group(3)
@@ -968,7 +981,9 @@ def operation(line,VARS):
 			print("Error de Tipo")
 			return None
 	obj = retorno_dc.match(line)
+
 	if (obj):
+
 		var1 = obj.group(1)
 		cast1 = obj.group(2)
 		op = obj.group(3)
@@ -1005,6 +1020,15 @@ def isfloat(a):
 	else:
 		return False
 
+def sent_retorno(linea,VARS):
+
+	obj = retorno_opsc.search(linea)
+
+	if obj:
+
+		valor = ops[obj.group(3)](float(obj.group(4)),get_val_value(obj.group(2),VARS))
+		return int(valor)
+
 
 
 
@@ -1016,9 +1040,12 @@ for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden gener
 	line = line.strip("\n").strip("\t")
 
 
+
 	identificador = identifier(line)
 	if identificador == FN:
-		if func_main.match(line):
+
+		if func_main.search(line):
+			
 			for line in file:
 				line = line.strip("\n").strip("\t")
 
