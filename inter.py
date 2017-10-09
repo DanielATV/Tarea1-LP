@@ -1,7 +1,4 @@
 import re
-import operator
-
-ops= {"+": operator.add, "-": operator.sub} # ops["+"](1,1) = 1 + 1
 
 Variables = dict()  # Key -> Variable ; Value -> [valor, tipo] 
 Funciones = dict()  #
@@ -54,7 +51,7 @@ retorno_opsc = re.compile("return\s(\w*|\d*)\s*(\+|\-)\s(\w*|\d*);")
 retorno_ci = re.compile("return\s(\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*));")
 retorno_cd = re.compile("return\s(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
 retorno_dc = re.compile("return\s\((\w+)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\w*)+\sas\s*(i16|i32|f64)\);")
-func = re.compile("fn\s*(\w*)\((\w*)\s*:\s*(i16|i32|f64)+\)\s*->\s*(i16|i32|f64)\s*{")
+func = re.compile("fn\s*(\w*)\((\w*):\s(i16|i32|f64)+\)\s*->\s*(i16|i32|f64)+{")
 func_main = re.compile("fn main\(\)\s*{")
 print_ln = re.compile("println!\s*\((\w+)\);")
 
@@ -609,7 +606,10 @@ def sentence(line,VARS):
 				else:
 					VARS[var][0] = str(int(VARS[var2][0]) - int(var3))
 					return VARS
-		if cast == VARS[var][1]:
+			else:
+				print("Error de Tipo")
+				exit(1)
+		if cast == VARS[var][1] and cast == VARS[var3]:
 			if op == "+":
 				VARS[var][0] = str(int(VARS[var3][0]) + int(VARS[var2][0]))
 				return VARS
@@ -780,13 +780,16 @@ def declaration(line,VARS): # En Desarrollo
 				print("Error Tipo")
 				exit(1)
 		elif compar_types(obj.group(3),obj.group(5),VARS):
-			pass
 			if get_val_type(obj.group(3),VARS) in ["i32","i16"]:
-				valor = operation(obj.group(3)+obj.group(4)+obj.group(5),VARS)
-				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
-				return VARS
+				if tipo == VARS[var2][1]:
+					valor = operation(var2+op+var3+";",VARS)
+					VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
+					return VARS
+				else:
+					print("Error Tipo")
+					exit(1)
 			elif VARS[obj.group(3)][1]=="f64" and VARS[obj.group(3)][1]=="f64":
-				valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
+				valor = operation(var2+op+var3+";",VARS)
 				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
 				return VARS
 		else:
@@ -840,11 +843,10 @@ def get_val_type(var,VARS):
 		return VARS[var][1]
 
 def get_val_value(var,VARS):
-    if VARS[var][0].isdigit():
-        return int(VARS[var][0])
-    else:
-        return float(VARS[var][0])
-
+	if VARS[var][0].isdigit():
+		return int(VARS[var][0])
+	else:
+		return float(VARS[var][0])
 
 def operation(line,VARS):
 	obj = op_sc.match(line)
@@ -899,10 +901,17 @@ def operation(line,VARS):
 			print("Variable "+var+" o "+var2+" no declarada")
 			return exit(1)
 
-	obj = op.match(line)
+	obj = sent_func.match(line)
 	if (obj):  # Falta La funcion que ejecuta las funciones para llamarla aca
-		pass
-
+		var = obj.group(1)
+		func = obj.group(2)
+		var2 = obj.group(3)
+		val = exe_func(func,var2,VARS)
+		if VARS[var][1] == Funciones[func][0][2]:
+			VARS[val][0] = val
+		else:
+			print("Error de Tipo")
+			exit(1)
 	obj = sent_var.match(line)
 	if (obj):
 		var = obj.group(1)
