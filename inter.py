@@ -395,6 +395,7 @@ def if_exec(line,fp,VARS):
 		if boolean and COND:
 			print("ELSE If condicion cumplida")
 			COND = False
+			llaves_abiertas = 1
 			for line in fp:
 				line = line.strip("\n")
 				line = line.strip("\t")
