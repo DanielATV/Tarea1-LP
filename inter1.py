@@ -551,18 +551,17 @@ Outputs:
 """
 
 def if_exec(line,fp,VARS):
-	print("Entrenado a un if")
-	print("Linea -> "+line)
+	print("Entrando a if")
+	print(line)
+	print(VARS)
 	llaves_abiertas = 1
 	COND = False
 	obj = if_sent.match(line)
 	if obj:
-		print("Hay match de if")
 		var1 = obj.group(1)
 		cond = obj.group(2)
 		var2 = obj.group(3)
 		if bool(var1,cond,var2,VARS) and COND == False:
-		
 			COND = True
 			for line in fp:
 				line = line.strip("\n")
@@ -575,12 +574,10 @@ def if_exec(line,fp,VARS):
 				elif a == WHILE:
 					lista = while_list(line,fp) # Ejecucion de los while
 		else:
-	
 			llaves_abiertas = 1
 			for line in fp:
 				line = line.strip("\n")
 				line = line.strip("\t")
-				print("Saltando linea  de if-> "+line)
 				if llaves_abiertas == 0:
 						break
 				if "}" in line:
@@ -591,13 +588,11 @@ def if_exec(line,fp,VARS):
 					llaves_abiertas = llaves_abiertas + 1			
 	obj = elseif_sent.match(line)
 	if obj:
-		print("Hay match de else if")
 		var1 = obj.group(1)
 		cond = obj.group(2)
 		var2 = obj.group(3)
-		print("Entrenado a un else if")
+		print(var1,cond,var2)
 		if bool(var1,cond,var2,VARS) and COND == False:
-		
 			COND = True
 			for line in fp:
 				line = line.strip("\n")
@@ -611,8 +606,6 @@ def if_exec(line,fp,VARS):
 					lista = while_list(line,fp)
 					## Ejecucion de los while
 		else:
-		
-			print("Saltando linea  de if-> "+line)
 			llaves_abiertas = 1
 			for line in fp:
 				line = line.strip("\n")
@@ -627,19 +620,14 @@ def if_exec(line,fp,VARS):
 					llaves_abiertas = llaves_abiertas + 1			
 	obj = else_sent.match(line)
 	if obj:
-		print("Entrenado a un else")
-		print("Linea -> "+line)
 		if COND == False:
 			COND = True
 			for line in fp:
 				line = line.strip("\n")
 				line = line.strip("\t")
-				print("Evaluando -> "+line)
 				a = identifier(line)
 				if a == SENT:
-					print(VARS)
 					VARS = sentence(line,VARS)
-					print(VARS)
 				elif a == IF:
 					VARS = if_exec(line,fp,VARS)
 				elif a == WHILE:
@@ -768,9 +756,6 @@ Outputs:
 
 """
 def get_val_value(var,VARS):
-	if var not in VARS.keys():
-		return None
-	else:
 		return VARS[var][0]
 """
 nombre_funcion(parametros) : breve descripcion
@@ -785,7 +770,7 @@ def compar_types(var1,var2,VARS): ###
 	if VARS[var1][1] == VARS[var2][1]:
 		return True
 	else:
-		return False
+		return None
 
 
 """
@@ -975,6 +960,176 @@ def println(line,VARS):
 	var = obj.group(1)
 	type_var = VARS[var][1]
 	print("El valor es: "+var+". Su tipo es: "+type_var)
+
+def operation(line,VARS):
+	obj = sent_op.match(line)
+	if (obj):
+		if obj.group(1) in VARS.keys():
+			var = obj.group(2)
+			op = obj.group(3)
+			var2 = obj.group(4)
+			if var.isdigit() and var2.isdigit():
+				if op == "+":
+					return str(int(var) + int(var2))
+				elif op == "-":
+					return str(int(var) - int(var2))
+			elif var.isdigit():
+				if not compar_types(obj.group(1),var2):
+					print("Error de tipos")
+					return None
+				var2 = get_val_value(var2,VARS)
+				if op == "+":
+					return str(int(var) + var2)
+				else:
+					return str(int(var) - var2)
+			elif var2.isdigit():
+				if compar_types(obj.group(1),var,VARS) == False:
+					print("Error de tipos")
+					return None
+				var = get_val_value(var,VARS)
+				if op == "+":
+					return str(var + int(var2))
+				else:
+					return str(var - int(var2))
+			else:
+				if compar_types(var,var2,VARS) == False:
+					print("Error de tipos")
+					return None
+				if compar_types(obj.group(1),var,VARS) == False:
+					print("Error de tipos")
+					return None
+				var = get_val_value(var,VARS)
+				var2 = get_val_value(var2,VARS)
+				if op == "+":
+					return str(var + var2)
+				else:
+					return str(var - var2)
+		else:
+			print("Variable "+obj.group(1)+" no declarada")
+			return None
+
+	obj = sent_func.match(line)
+
+	if (obj):# Falta La funcion que ejecuta las funciones para llamarla aca
+		pass 
+
+	obj = sent_var.match(line)
+	if (obj):
+		var = obj.group(1)
+		var2 = obj.group(2)
+		if var in VARS.keys() and var2 in VARS.keys():
+			if compar_types(var,var2):
+				return var2
+			else:
+				print("Error de Tipo")
+				return None
+		else:
+			print("Variable o variables no definidas")
+	
+	obj = sent_val.match(line)
+	if (obj):
+		var = obj.group(1)
+		val = obj.group(2)
+		if var not in VARS.keys():
+			print("Variable "+var+" no definida")
+			return None
+		return val
+	
+	obj = sent_op_cast.match(line)
+	if (obj):
+		var = obj.group(1)
+		var2 = obj.group(2)
+		cast = obj.group(3)
+		if var not in VARS.keys():
+			print("Variable "+var+" no definida")
+			return None
+		if cast == VARS[var][1]:
+			return var2
+		else:
+			print("Error de Tipo")
+			return None
+
+	obj = sent_op_valcastd.match(line)
+	if (obj):
+		var = obj.group(1)
+		var2 = obj.group(2)
+		op = obj.group(3)
+		var3 = obj.group(4)
+		cast = obj.group(5)
+		if var2.isdigit():
+			if cast == VARS[var][1]:
+				if op == "+":
+					return str(int(VARS[var3][0]) + int(var2))
+				else:
+					return str(int(var2) - int(var3))
+		if cast == VARS[var2][1] and cast == VARS[var][1]:
+			if op == "+":
+				return str(int(VARS[var3][0]) + int(VARS[var2][0]))
+			else:
+				return str(int(VARS[var2][0]) - int(var3))
+		else:
+			print("Error de Tipo")
+			return None
+
+	obj = sent_op_valcasti.match(line)
+	if (obj):
+		var = obj.group(1)
+		var2 = obj.group(2)
+		cast = obj.group(3)
+		op = obj.group(4)
+		var3 = obj.group(5)
+		if var3.isdigit():
+			if cast == VARS[var][1]:
+				if op == "+":
+					return str(int(VARS[var2][0]) + int(var3))
+				else:
+					return str(int(VARS[var2][0]) - int(var3))
+		if cast == VARS[var][1]:
+			if op == "+":
+				return str(int(VARS[var3][0]) + int(VARS[var2][0]))
+			else:
+				return str(int(VARS[var2][0]) - int(VARS[var3][0]))
+		else:
+			print("Error de Tipo")
+			return None
+	obj = retorno_dc.match(line)
+	if (obj):
+		var1 = obj.group(1)
+		cast1 = obj.group(2)
+		op = obj.group(3)
+		var2 = obj.group(4)
+		cast2 = obj.group(5)
+		if(cast1 == cast2):
+			if cast1 in ["i16","i32"] and VARS[var1][1] == "f64":
+				var1 = float_to_int(var1,VARS)
+			if cast2 in ["i16","i32"] and VARS[var2][1] == "f64":
+				var2 = float_to_int(var2,VARS)
+			if cast1 == "f64" and VARS[var1][1] in ["i16","i32"]:
+				var1 = int_to_float(var1,VARS)
+			if cast2 == "f64" and VARS[var2][1] in ["i16","i32"]:
+				var2 = int_to_float(var2,VARS)
+			if VARS[var][1] == cast1:
+				if cast1 == "f64" and op == "+":
+					return str(float(var1) + float(var2))
+				if cast1 == "f64" and op == "-":
+					return str(float(var1) - float(var2))
+				if cast1 ["i16","i32"] and op == "+":
+					return str(int(var1) + int(var2))
+				if cast1 ["i16","i32"] and op == "-":
+					return  str(int(var1) - int(var2))
+			else:
+				print("Error de Tipo")
+				return None
+		else:
+			print("Error de Tipo")
+			return None
+			
+def isfloat(a):
+	if "." in a:
+		return True
+	else:
+		return False
+
 
 
 
