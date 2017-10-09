@@ -68,7 +68,7 @@ retorno_dc = re.compile("return\s\((\w+)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\
 
 #Funciones
 
-func = re.compile("fn\s(\w*)\((\w):\s(i16|i32|f64)\)\s->\s(i16|i32|f64){")
+func = re.compile("fn\s*(\w*)\((\w)\s*:\s*(i16|i32|f64)\)\s*->\s*(i16|i32|f64)\s*{")
 func_main = re.compile(r"fn\smain\(\)\s{")
 
 #Print
@@ -756,7 +756,7 @@ Outputs:
 
 """
 def get_val_value(var,VARS):
-		return VARS[var][0]
+		return int(VARS[var][0])
 """
 nombre_funcion(parametros) : breve descripcion
 Inputs:
@@ -1048,7 +1048,7 @@ for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden gener
 
 
 
-		elif func.match(line):
+		elif func.search(line):
 			store_fun(line,file)
 
 		else:
