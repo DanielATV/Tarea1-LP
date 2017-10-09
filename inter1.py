@@ -866,10 +866,10 @@ def exe_while(lista_while,fp,VARS):
 			a = identifier(line)
 			if a == SENT:
 				VARS = sentence(line,VARS)
-				print(VARS)
+				
 			elif a == IF:
 				VARS = if_exec(line,fp,VARS)
-				print(VARS)
+
 		Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
 
 # def leedor_while(listawhile,VARS):
@@ -970,6 +970,11 @@ def exe_while(lista_while,fp,VARS):
 	# 	 			sentence(sent,VARS)
 	# 	 			izquierda = get_val_value(variable,VARS)
 
+def println(line,VARS):
+	obj = print_ln.match(line)
+	var = obj.group(1)
+	type_var = VARS[var][1]
+	print("El valor es: "+var+". Su tipo es: "+type_var)
 
 
 
@@ -1020,6 +1025,4 @@ for line in file: # Considerar hacer un strip "\t" las tabulaciones pueden gener
 			print "Error"
 			break
 			
-
-
 print Variables
