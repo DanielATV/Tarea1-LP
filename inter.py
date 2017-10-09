@@ -43,7 +43,7 @@ op_func_do = re.compile("(\w*)\s*=\s*(\w*)\((\w*)\)\s*(\+|\-)\s*(\w*)\((\w*)\)\s
 cast = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)")
 while_sent = re.compile("while\s*(\w*)\s*(<|>|=|>=|<=)\s*(\w*|\d*\.\d*)\s*{")
 if_sent = re.compile("if\s*(\w*)\s*(<|>|=|>=|<=)\s*(\w*|\d*\.\d*)\s*{")
-elseif_sent = re.compile("} else if ([A-z]) (<=|>=|>|<|=) ([A-z]+|[0-9]+) {")
+elseif_sent = re.compile("}\s*else if\s*([A-z])\s*(<=|>=|>|<|=)\s*([A-z]+|[0-9]+)\s*{")
 else_sent= re.compile("}\s*else\s*{")
 end_while = end_func = end_if = re.compile("}")
 retorno_var_val = re.compile("return\s(\w*);")
