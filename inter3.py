@@ -1,4 +1,7 @@
 import re
+import operator
+
+ops= {"+": operator.add, "-": operator.sub} # ops["+"](1,1) = 1 + 1 
 
 Variables = dict()  # Key -> Variable ; Value -> [valor, tipo] 
 Funciones = dict()  #
