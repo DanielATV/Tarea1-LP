@@ -59,6 +59,36 @@ func = re.compile("fn\s*(\w*)\((\w*):\s(i16|i32|f64)+\)\s*->\s*(i16|i32|f64)+{")
 func_main = re.compile("fn main\(\)\s*{")
 print_ln = re.compile("println!\s*\((\w+)\);")
 
+"""
+identifier(line) : Busca que es lo que se intenta hacer, por ejemplo, definir una funcion.
+Inputs:
+(string) La linea que se esta leyendo del archivo.
+
+Outputs:
+(string) El match que tuvo.
+"""
+def identifier(line):
+	if LET in line:
+		return LET
+	elif WHILE in line:
+		return WHILE
+	elif ELSE_IF in line:
+		return ELSE_IF
+	elif IF in line:
+		return IF
+	elif ELSE in line:
+		return ELSE
+	elif RETURN in line:
+		return RETURN
+	elif FN in line:
+		return FN
+	elif END in line:
+		return END
+	elif PRINT in line:
+		return PRINT
+	else:
+		return SENT
+
 def if_exec_static(line,lista,VARS):
 	llaves_abiertas = 1
 	COND = False
@@ -1111,29 +1141,6 @@ def operation(line,VARS):
 			exit(1)
 	print("Error de Sintaxis --> ",line)
 	exit(1)
-
-
-def identifier(line):
-	if LET in line:
-		return LET
-	elif WHILE in line:
-		return WHILE
-	elif ELSE_IF in line:
-		return ELSE_IF
-	elif IF in line:
-		return IF
-	elif ELSE in line:
-		return ELSE
-	elif RETURN in line:
-		return RETURN
-	elif FN in line:
-		return FN
-	elif END in line:
-		return END
-	elif PRINT in line:
-		return PRINT
-	else:
-		return SENT
 
 def isfloat(a):
 	if "." in a:
