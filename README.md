@@ -9,8 +9,12 @@ Dentro de funciones distintas de main no se pueden hacer llamados a funciones.
 
 No hay variables globales (Toda variable se declara dentro de una función).
 
+Todas las declaraciones se hacen al principio.
+
 Si se hace la suma o resta de dos valores enteros se asume que son del mismo tipo de entero. (2(i32) + 2(i32))
 
 Si se suma o resta una varible a a un valor se asume que el valor es de tipo compatible (a(i16) + 2(i16) )
 
 No hay checkeo de tipo en los boleanos.
+
+A lo mas hay un else if por cada if.
