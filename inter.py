@@ -341,7 +341,18 @@ def bool(var,cond,var2,VARS):
     else:
         print("Error de Sintaxis")
         exit(1)
-
+	
+"""
+println(line,VARS): Imprime el valor y el tipo de la varible.
+Inputs:
+(string) Linea donde este el print.
+(dict) Diccionario con las variables del ambito.
+..
+Outputs:
+(string): Mensaje con el valor y tipo.
+..
+"""
+	
 def println(line,VARS):
 	obj = print_ln.match(line)
 	var = obj.group(1)
