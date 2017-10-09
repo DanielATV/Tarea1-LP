@@ -41,7 +41,7 @@ op_func_de = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)\s*(\w*)\((\w*)\)\s*;")
 op_func_iz = re.compile("(\w*)\s*=\s*(\w*)\((\w*)\)\s*(\+|\-)\s*(\w*);")
 op_func_do = re.compile("(\w*)\s*=\s*(\w*)\((\w*)\)\s*(\+|\-)\s*(\w*)\((\w*)\)\s*;")
 cast = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)")
-while_sent = re.compile("while\s(\w*)\s*(<|>|=|>=|<=)\s*(\w*)\s*{")
+while_sent = re.compile("while\s*(\w*)\s*(<|>|=|>=|<=)\s*(\w*|\d*\.\d*)\s*{")
 if_sent = re.compile("if\s(\w*)\s*(<|>|=|>=|<=)\s*(\w*)\s*{")
 elseif_sent = re.compile("} else if ([A-z]) (<=|>=|>|<|=) ([A-z]+|[0-9]+) {")
 else_sent= re.compile("}\s*else\s*{")
@@ -263,28 +263,31 @@ def exe_while(lista_while,fp,VARS):
 			break
 
 def bool(var,cond,var2,VARS):
-	if var2.isdigit():
-		var = get_val_value(var,VARS)
-		var2 = int(var2)
-	elif compar_types(var,var2,VARS) == True:
-		var = get_val_value(var,VARS)
-		var2 = get_val_value(var2,VARS)
-	else:
-		print("Error Tipo")
-		exit(1)
-	if cond == "<":
-		return var < var2
-	elif cond == ">":
-		return var > var2
-	elif cond == "=":
-		return var == var2
-	elif cond == ">=":
-		return var >= var2
-	elif cond == "<=":
-		return var <= var2
-	else:
-		print("Error de Sintaxis")
-		exit(1)
+    if var2.isdigit():
+        var = get_val_value(var,VARS)
+        var2 = int(var2)
+    elif isfloat(var2):
+        var = get_val_value(var,VARS)
+        var2 = float(var2)
+    elif compar_types(var,var2,VARS) == True:
+        var = get_val_value(var,VARS)
+        var2 = get_val_value(var2,VARS)
+    else:
+        print("Error Tipo")
+        exit(1)
+    if cond == "<":
+        return var < var2
+    elif cond == ">":
+        return var > var2
+    elif cond == "=":
+        return var == var2
+    elif cond == ">=":
+        return var >= var2
+    elif cond == "<=":
+        return var <= var2
+    else:
+        print("Error de Sintaxis")
+        exit(1)
 
 def println(line,VARS):
 	obj = print_ln.match(line)
