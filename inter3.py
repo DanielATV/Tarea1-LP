@@ -579,6 +579,16 @@ def store_fun(line,fp):
 		Funciones[name_func].append(line)
 	return True
 
+"""
+while_list(line,fp) : Guarda todo el ciclo while en una lista.
+Inputs:
+(string): Linea que lee del archivo
+(file object): Archivo que se esta leyendo.
+
+Outputs:
+(lista) Lista con todas las senticas del while, siendo el primer elemento una tupla con el boleano a evaluar.
+
+"""
 def while_list(line,fp):
 	obj = while_sent.match(line)
 	var1 = obj.group(1)
