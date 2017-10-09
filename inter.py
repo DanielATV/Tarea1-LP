@@ -51,23 +51,10 @@ retorno_opsc = re.compile("return\s(\w*|\d*)\s*(\+|\-)\s(\w*|\d*);")
 retorno_ci = re.compile("return\s(\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*));")
 retorno_cd = re.compile("return\s(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
 retorno_dc = re.compile("return\s\((\w+)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\w*)+\sas\s*(i16|i32|f64)\);")
-func = re.compile("fn\s*(\w*)\((\w*):\s(i16|i32|f64)+\)\s*->\s*(i16|i32|f64)+{")
+func = re.compile("fn\s*(\w*)\((\w*)\s*:\s*(i16|i32|f64)+\)\s*->\s*(i16|i32|f64)\s*{")
 func_main = re.compile("fn main\(\)\s*{")
 print_ln = re.compile("println!\s*\((\w+)\);")
 
-
-"""
-if_exec_static(line,lista,VARS): Ejecuta los ifs dentro de las funciones.
-Inputs:
-(string): Linea que lee del archivo.
-(lista): Lista con todas las sentencias del if.
-(diccionario): Diccionario con las variables del ambito.
-..
-Outputs:
-(diccionario): Diccionario varibles actualizado.
-(lista): Lista con sentencias hasta donde se ejecuto.
-
-"""
 def if_exec_static(line,lista,VARS):
 	llaves_abiertas = 1
 	COND = False
@@ -191,17 +178,6 @@ def if_exec_static(line,lista,VARS):
 	print("-------------- Saliendo If --------------")
 	return VARS,lista
 
-
-"""
-while_list_static(line,lista) : Crea una lista con las sentencias del while.
-Inputs:
-(string): Linea del archivo.
-(list): Lista sentencias de la funcion.
-..
-Outputs:
-(list): Lista con las sentencias del while.
-..
-"""
 def while_list_static(line,lista):
 	obj = while_sent.match(line)
 	var1 = obj.group(1)
@@ -235,18 +211,6 @@ def while_list_static(line,lista):
 			break
 	return lista_while
 
-"""
-exe_while_static(lista_while,lista,VARS) : Ejecuta el ciclo while dentro de la funcion.
-Inputs:
-(list): Lista con las sentencias del while.
-(list): Lista de sentencias por leer de la funcion.
-(dict): Diccionaro con las variables del ambito.
-..
-Outputs:
-(list): Lista con las sentencias que faltan por leer de la funcion.
-(var): Diccionario con las variables actualizadas.
-
-"""
 def exe_while_static(lista_while,lista,VARS):
 	Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
 	print("While a ejecutar --> ",lista)
@@ -275,16 +239,6 @@ def exe_while_static(lista_while,lista,VARS):
 			break
 	return VARS,lista
 
-"""
-def exe_while(lista_while,fp,VARS):  Ejecuta el ciclo while dentro del main.
-Inputs:
-(list): Lista con la sentencias del while.
-(file obj): Archivo que se esta leyendo.
-(dict):  Diccionario con las variables del ambito.
-..
-Outputs:
-(dict): Diccionario varibles actualizadas.
-"""
 def exe_while(lista_while,fp,VARS):
 	Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
 	while Flag:
@@ -306,20 +260,8 @@ def exe_while(lista_while,fp,VARS):
 		print("Final ciclo while")
 		Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
 		if Flag == False:
-
 			break
-"""
-bool(var,cond,var2,VARS): Evalua si es verdadero o falso la expresion.
-Inputs:
-(string): Variable.
-(string): Variable o valor.
-(dict): Diccinario de las variables del ambito.
-..
-Outputs:
-(boolean): False si no se cumple.
-(boolean): True si se cumple.
 
-"""
 def bool(var,cond,var2,VARS):
 	if var2.isdigit():
 		var = get_val_value(var,VARS)
@@ -402,99 +344,122 @@ def while_list(line,fp):
 
 def if_exec(line,fp,VARS):
 	print("-------------- Entrando If --------------")
+	print(line)
 	llaves_abiertas = 1
-	COND = False
+	COND = True
 	obj = if_sent.match(line)
-	if obj and not COND:
+	if obj and COND:
+		print("Match con IF")
 		boolean = bool(obj.group(1),obj.group(2),obj.group(3),VARS)
-		print("Boolean ",boolean)
 		if boolean:
-			COND == True
+			print("If condicion cumplida")
+			COND = False
 			for line in fp:
 				line = line.strip("\n")
 				line = line.strip("\t")
-				print("match 1")
+				print (line)
 				a = identifier(line)
-				if a == SENT:
-					VARS = sentence(line,VARS)
 				if a == IF:
 					VARS = if_exec(line,fp,VARS)
 				if a == WHILE:
-					lista = while_list(line,fp)
-					VARS = exe_while(lista,fp,VARS)
-				if a == END:
-					llaves_abiertas = llaves_abiertas - 1
-				if llaves_abiertas == 0:
-					break
-		else:
-			for line in fp:
-				line = line.strip("\n")
-				line = line.strip("\t")
-				print("match 1.1")
-				print(llaves_abiertas)
+					lista_while = while_list(line,fp)
+					VARS = exe_while(lista_while,fp,VARS)
+				if a == SENT:
+					VARS = sentence(line,VARS)
 				if "}" in line:
 					llaves_abiertas = llaves_abiertas - 1
 					if llaves_abiertas == 0:
 						break
 				if "{" in line:
 					llaves_abiertas = llaves_abiertas + 1
-				if llaves_abiertas == 0:
-					break
-	
-	obj = elseif_sent.match(line)
-	if obj and not COND:
-		boolean = bool(obj.group(1),obj.group(2),obj.group(3),VARS)
-		print("Boolean ",boolean)
-		if boolean:
-			COND == True
-			for line in fp:
-				line = line.strip("\n")
-				line = line.strip("\t")
-				print("match 2")
-				a = identifier(line)
-				if a == SENT:
-					VARS = sentence(line,VARS)
-				if a == IF:
-					VARS = if_exec(line,fp,VARS)
-				if a == WHILE:
-					lista = while_list(line,fp)
-					VARS = exe_while(lista,fp,VARS)
-				if a == END:
-					llaves_abiertas = llaves_abiertas - 1
-				if llaves_abiertas == 0:
-					break
 		else:
+			print("If condicion NO cumplida")
 			for line in fp:
 				line = line.strip("\n")
 				line = line.strip("\t")
-				print("match 1.1")
+				print (line)
 				a = identifier(line)
+				if "}" in line:
+					llaves_abiertas = llaves_abiertas - 1
+					if llaves_abiertas == 0:
+						break
 				if "{" in line:
 					llaves_abiertas = llaves_abiertas + 1
-				if a == END:
-					llaves_abiertas = llaves_abiertas - 1
-				if llaves_abiertas == 0:
-					break
-		
-	obj = else_sent.match(line)
-	if obj and not COND:
-		print("match 3")
-		for line in fp:
+	obj = elseif_sent.match(line)
+	if obj:
+		print("Match con ELSE IF")
+		boolean = bool(obj.group(1),obj.group(2),obj.group(3),VARS)
+		if boolean and COND:
+			print("ELSE If condicion cumplida")
+			COND = False
+			for line in fp:
 				line = line.strip("\n")
 				line = line.strip("\t")
-				print("match 2")
+				print (line)
 				a = identifier(line)
-				if a == SENT:
-					VARS = sentence(line,VARS)
 				if a == IF:
 					VARS = if_exec(line,fp,VARS)
 				if a == WHILE:
-					lista = while_list(line,fp)
-					VARS = exe_while(lista,fp,VARS)
-				if a == END:
+					lista_while = while_list(line,fp)
+					VARS = exe_while(lista_while,fp,VARS)
+				if a == SENT:
+					VARS = sentence(line,VARS)
+				if "}" in line:
 					llaves_abiertas = llaves_abiertas - 1
-				if llaves_abiertas == 0:
-					break
+					if llaves_abiertas == 0:
+						break
+				if "{" in line:
+					llaves_abiertas = llaves_abiertas + 1
+		else:
+			print("ELSE IF condicion NO cumplida")
+			for line in fp:
+				llaves_abiertas = 1
+				line = line.strip("\n")
+				line = line.strip("\t")
+				print (line)
+				a = identifier(line)
+				if "}" in line:
+					llaves_abiertas = llaves_abiertas - 1
+					if llaves_abiertas == 0:
+						break
+				if "{" in line:
+					llaves_abiertas = llaves_abiertas + 1
+	obj = else_sent.match(line)
+	if obj:
+		if COND:
+			print("Condicion ELSE Entra")
+			for line in fp:
+				line = line.strip("\n")
+				line = line.strip("\t")
+				print (line)
+				a = identifier(line)
+				if a == IF:
+					VARS = if_exec(line,fp,VARS)
+				if a == WHILE:
+					lista_while = while_list(line,fp)
+					VARS = exe_while(lista_while,fp,VARS)
+				if a == SENT:
+					VARS = sentence(line,VARS)
+				if "}" in line:
+					llaves_abiertas = llaves_abiertas - 1
+					if llaves_abiertas == 0:
+						break
+				if "{" in line:
+					llaves_abiertas = llaves_abiertas + 1
+		else:
+			print("ELSE Saltado")
+			for line in fp:
+				llaves_abiertas = 1
+				line = line.strip("\n")
+				line = line.strip("\t")
+				print (line)
+				a = identifier(line)
+				if "}" in line:
+					llaves_abiertas = llaves_abiertas - 1
+					if llaves_abiertas == 0:
+						break
+				if "{" in line:
+					llaves_abiertas = llaves_abiertas + 1
 	print("-------------- Saliendo If --------------")
 	return VARS
 
@@ -788,10 +753,31 @@ def declaration(line,VARS): # En Desarrollo
 			exit(1)
 	obj = var_op.search(line)
 	if obj:
-		if (obj.group(3).isdigit() or isfloat(obj.group(3))) and (obj.group(5).isdigit() or isfloat(obj.group(5))):
-			VARS[obj.group(1)] = [operation(obj.group(3)+obj.group(4)+obj.group(5)+";",VARS),obj.group(2)]
+		var = obj.group(1)
+		tipo = obj.group(2)
+		var2 = obj.group(3)
+		op = obj.group(4)
+		var3 = obj.group(5)
+		sent = var2+op+var3+";"
+		if (var2.isdigit() or isfloat(var2)) and (obj.group(5).isdigit() or isfloat(obj.group(5))):
+			VARS[var] = [operation(sent,VARS),tipo]
 			return VARS
+		elif (var2.isdigit() or isfloat(var2)):
+			if VARS[var3][1] == tipo:
+				VARS[var] = [operation(sent,VARS),tipo]
+				return VARS
+			else:
+				print("Error Tipo")
+				exit(1)
+		elif (var3.isdigit() or isfloat(var3)):
+			if VARS[var2][1] == tipo:
+				VARS[var] = [operation(sent,VARS),tipo]
+				return VARS
+			else:
+				print("Error Tipo")
+				exit(1)
 		elif compar_types(obj.group(3),obj.group(5),VARS):
+			pass
 			if get_val_type(obj.group(3),VARS) in ["i32","i16"]:
 				valor = operation(obj.group(3)+obj.group(4)+obj.group(5),VARS)
 				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
