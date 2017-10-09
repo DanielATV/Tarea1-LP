@@ -1,10 +1,7 @@
 import re
-import operator
-
-ops= {"+": operator.add, "-": operator.sub} # ops["+"](1,1) = 1 + 1 
 
 Variables = dict()  # Key -> Variable ; Value -> [valor, tipo] 
-Funciones = dict()  # Key -> nombre funcion; Value: lista[(tipo,variable,entrada),tipo variable salida,sentencias]
+Funciones = dict()  #
 In_Fun = None
 In_While = None
 Cond_Done = False
@@ -24,7 +21,6 @@ var_val = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\d+);")
 var_var = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w+);")
 var_func = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\((\w*)\);")
 var_op = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w+)\s*(\+|\-)\s*(\w+);")
-var_op_sc = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s*(\w*)\s*;")
 var_op_cast = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\);")
 var_op_valcasti = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s(\w*);")
 var_op_valcastd = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
@@ -38,7 +34,7 @@ sent_op_cast = re.compile("(\w*)\s*=\s*\((\w*)\sas\s(i16|i32|f64)\);")
 sent_op_valcasti = re.compile("(\w*)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)\s*;")
 sent_op_valcastd = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
 sent_op_doublecast = re.compile("(\w+)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)+\s*\((\w*)\sas\s*(i16|i32|f64)\);")
-op_sc = re.compile("(\w*|\d*)\s*(\+|\-)\s(\w*|\d*)")
+op_sc = re.compile("(\w*|\d*)\s*(\+|\-)\s*(\w*|\d*)")
 op_cd = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)")
 op_ci = re.compile("(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\)")
 op_func_de = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)\s*(\w*)\((\w*)\)\s*;")
@@ -58,253 +54,6 @@ retorno_dc = re.compile("return\s\((\w+)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\
 func = re.compile("fn\s*(\w*)\((\w*):\s(i16|i32|f64)+\)\s*->\s*(i16|i32|f64)+{")
 func_main = re.compile("fn main\(\)\s*{")
 print_ln = re.compile("println!\s*\((\w+)\);")
-
-"""
-identifier(line) : Busca que es lo que se intenta hacer, por ejemplo, definir una funcion.
-Inputs:
-(string) La linea que se esta leyendo del archivo.
-
-Outputs:
-(string) El match que tuvo.
-"""
-def identifier(line):
-	if LET in line:
-		return LET
-	elif WHILE in line:
-		return WHILE
-	elif ELSE_IF in line:
-		return ELSE_IF
-	elif IF in line:
-		return IF
-	elif ELSE in line:
-		return ELSE
-	elif RETURN in line:
-		return RETURN
-	elif FN in line:
-		return FN
-	elif END in line:
-		return END
-	elif PRINT in line:
-		return PRINT
-	else:
-		return SENT
-	
-"""
-ret_fun(line,tipo,VARS) : 
-Inputs:
-(string): La linea que se esta leyendo del archivo.
-(string): El tipo de dato que se retorna
-(diccionario): El diccionario de las variables del enterno en que se trabaja.
-
-Outputs:
-(string): El resultado de la operacion en forma de string
-
-"""
-def ret_fun(line,tipo,VARS):
-	obj = retorno_var_val.match(line)
-	if obj:
-		var = obj.group(1)
-		if var.isdigit():
-			return var
-		else:
-			var = VARS[var]
-			return var
-	obj = retorno_opsc.match(line)
-	if obj:
-		return operation(line,VARS)
-	obj = retorno_cd
-	if obj:
-		return operation(line,VARS)
-	obj = retorno_ci
-	if obj:
-		return operation(line,VARS)
-	obj = retorno_dc
-	if obj:
-		return operation(line,VARS)
-	
-"""
-declaration(line,VARS) : 
-Inputs:
-(string): La linea que se esta leyendo del archivo.
-(diccionario): El diccionario de las variables del enterno en que se trabaja.
-
-Outputs:
-(None): En el caso que haya error de tipo.
-(diccionario): El diccionario actualizado con las declaraciones.
-
-"""
-
-def declaration(line,VARS):
-	obj = var_val.search(line)
-	if(obj):
-
-		if obj.group(2) in ["i32","i16"]:
-
-			up_val(obj.group(1),int(float(obj.group(3))),obj.group(2),VARS)
-
-			return VARS
-		else:
-
-			up_val(obj.group(1),float(obj.group(3)),obj.group(2),VARS)
-
-			return VARS
-
-
-	obj = var_var.search(line)
-	if(obj):
-		lista = Variables[obj.group(3)]
-
-		if obj.group(2) == lista[1]:
-			up_val(obj.group(1),lista[0],obj.group(2),VARS)
-			return VARS
-		else:
-			print "Error de tipo"#falta hacer que termine el programa
-			return None
-
-	obj = var_op.search(line)
-	if obj:
-
-		if obj.group(2) in ["i32","i16"]:
-			valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
-			up_val(obj.group(1),int(valor),obj.group(2),VARS)
-			return VARS
-		else:
-			valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
-			up_val(obj.group(1),valor,obj.group(2),VARS)
-			return  VARS
-
-
-	obj = var_op_cast_cast.search(line)
-	if obj:
-
-		if compar_types(obj.group(3),obj.group(6),VARS):
-
-		
-			if get_val_type(obj.group(3),VARS) in ["i32","i16"]:
-
-				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
-				up_val(obj.group(1),int(valor),obj.group(2),VARS)
-		
-			else:
-				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
-				up_val(obj.group(1),valor,obj.group(2),VARS)
-		else:
-			print "Error Tipo"
-			return None
-		
-	obj = var_op_valcasti_variable.search(line)
-	if obj:
-
-
-		if obj.group(4) == get_val_type(obj.group(6),VARS):
-
-			if obj.group(2) in ["i32","i16"]:				
-
-				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
-				up_val(obj.group(1),int(valor),obj.group(2),VARS)
-				return  VARS
-			else:
-				valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(6),VARS)))
-				up_val(obj.group(1),valor,obj.group(2),VARS)
-				return  VARS
-		else:
-			print "Error tipo"
-			return None
-
-
-
-	obj = var_op_valcasti_valor.search(line)
-	if obj:
-	
-		if obj.group(2) in ["i32","i16"]:
-
-			valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(obj.group(6)))
-			up_val(obj.group(1),int(valor),obj.group(2),VARS)
-			return  VARS
-
-		else:
-			valor = ops[obj.group(5)](float(get_val_value(obj.group(3),VARS)),float(obj.group(6)))
-			up_val(obj.group(1),valor,obj.group(2),VARS)
-			return  VARS
-
-	obj = var_op_valcastd_valor.search(line)
-	if obj:
-
-		if obj.group(2) in ["i32","i16"]:
-
-			valor = ops[obj.group(5)](float(obj.group(3)),float(get_val_value(obj.group(6),VARS)))
-			up_val(obj.group(1),int(valor),obj.group(2),VARS)
-			return  VARS
-
-		else:
-
-			valor = ops[obj.group(5)](float(obj.group(3)),float(get_val_value(obj.group(6),VARS)))
-			up_val(obj.group(1),valor,obj.group(2),VARS)
-			return  VARS
-
-	obj = var_op_valcastd_variable.search(line)
-
-	if obj:
-
-		if obj.group(6) == get_val_type(obj.group(3),VARS):
-
-			if obj.group(2) in ["i32","i16"]:	
-
-				valor = ops[obj.group(4)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(5),VARS)))
-				up_val(obj.group(1),int(valor),obj.group(2),VARS)
-				return  VARS
-
-			else:
-				valor = ops[obj.group(4)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(5),VARS)))
-				up_val(obj.group(1),valor,obj.group(2),VARS)
-				return  VARS
-
-		else:
-			print "Error de tipo"
-			return None
-
-	obj = var_func.match(line)
-	
-	if obj:
-		var = obj.group(1)
-		tipo = obj.group(2)
-		func = obj.group(3)
-		var2 = obj.group(4)
-		VARS[var] = [exe_func(func,var2,VARS),tipo]
-		return VARS
-
-	print("No Definido")
-	exit(1)
-
-
-	obj = var_op_sc.search(line)
-	if obj:
-
-
-		if compar_types(obj.group(3),obj.group(5),VARS):
-			
-			if get_val_type(obj.group(3),VARS) in ["i32","i16"]:
-
-				valor = ops[obj.group(4)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(5),VARS)))
-				up_val(obj.group(1),int(valor),obj.group(2),VARS)
-
-				return VARS
-
-			else :
-
-				valor = ops[obj.group(4)](float(get_val_value(obj.group(3),VARS)),float(get_val_value(obj.group(5),VARS)))
-				up_val(obj.group(1),valor,obj.group(2),VARS)
-
-				return VARS
-
-		else:
-			print "Error de tipo"
-			return None
-		
-
-	else:
-		print "Error"
-		return None
 
 def if_exec_static(line,lista,VARS):
 	llaves_abiertas = 1
@@ -543,18 +292,7 @@ def println(line,VARS):
 	type_var = VARS[var][1]
 	print("El valor es: "+var+". Su tipo es: "+type_var)
 
-"""
-Store_fun(line,fp) : Guarda la funcion en un diccionario. 
-Inputs:
 
-(string): Linea que lee del archivo.
-(file object): Archivo que se esta leyendo.
-
-Outputs:
-(None): Si es la funcion main no la guarda.
-(True): Si guarda la funcion con exito.
-
-"""
 def store_fun(line,fp):
 	obj = func_main.match(line)
 	if obj:
@@ -579,16 +317,6 @@ def store_fun(line,fp):
 		Funciones[name_func].append(line)
 	return True
 
-"""
-while_list(line,fp) : Guarda todo el ciclo while en una lista.
-Inputs:
-(string): Linea que lee del archivo
-(file object): Archivo que se esta leyendo.
-
-Outputs:
-(lista) Lista con todas las senticas del while, siendo el primer elemento una tupla con el boleano a evaluar.
-
-"""
 def while_list(line,fp):
 	obj = while_sent.match(line)
 	var1 = obj.group(1)
@@ -961,6 +689,9 @@ def sentence(line,VARS):
 		else:
 			print("Error de Tipo")
 			exit(1)
+	if line == "":
+		print("Linea en Blanco, pasando ...")
+		return VARS
 	print("no se encontro nada")
 	exit(1)
 
@@ -973,6 +704,65 @@ def int_to_float(var,VARS):
 	var = VARS[var][0]+".0"
 	return var
 
+def declaration(line,VARS): # En Desarrollo
+	obj = var_val.search(line)
+	if(obj):
+		VARS = up_val(obj.group(1),obj.group(3),obj.group(2),VARS)
+		return VARS
+	obj = var_var.search(line)
+	if(obj):
+		print(obj.groups())
+		lista = VARS[obj.group(3)]
+		if obj.group(2) == lista[1]:
+			VARS[obj.group(1)] = 1
+			return VARS
+		else:
+			print("Error de tipo") # Falta hacer que termine el programa
+			return False
+		return VARS
+	obj = var_op.search(line)
+	if obj:
+		if (obj.group(3).isdigit() or isfloat(obj.group(3))) and (obj.group(5).isdigit() or isfloat(obj.group(5))):
+			VARS[obj.group(1)] = [operation(obj.group(3)+obj.group(4)+obj.group(5)+";",VARS),obj.group(2)]
+			return VARS
+		elif compar_types(obj.group(3),obj.group(5),VARS):
+			if get_val_type(obj.group(3),VARS) in ["i32","i16"]:
+				valor = ops[obj.group(4)](int(obj.group(3)),int(obj.group(5)))
+				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
+				return VARS
+			else:
+				valor = ops[obj.group(4)](float(obj.group(3)),float(obj.group(5)))
+				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
+				return VARS
+		else:
+			print("Error de tipo")
+	obj = var_op_cast_cast.search(line)
+	if obj:
+		if compar_types(obj.group(3),obj.group(6)):
+			if get_val_type(obj.group(3)) == ("i32" or "i16"):
+				valor = ops[obj.group(5)](int(float(get_val_value(obj.group(3)))),int(float(get_val_value(obj.group(6)))))
+				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
+				return VARS
+			else:
+				valor = ops[obj.group(5)](float(get_val_value(obj.group(3))),float(get_val_value(obj.group(6))))
+				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
+				return VARS
+		else:
+			print("Error de tipo")	
+	obj = var_op_valcasti.search(line)
+	if obj:
+		obj = sent_op_valcastd.search(line)
+	obj = var_func.match(line)
+	if obj:
+		var = obj.group(1)
+		tipo = obj.group(2)
+		func = obj.group(3)
+		var2 = obj.group(4)
+		VARS[var] = [exe_func(func,var2,VARS),tipo]
+		return VARS
+
+	print("No Definido")
+	exit(1)
 
 def up_val(var,valor,tipo,VARS):
 	VARS[var] = [valor,tipo]
@@ -997,48 +787,14 @@ def get_val_value(var,VARS):
 
 def operation(line,VARS):
 	print(line)
-	obj = sent_op.match(line)
+	obj = op_sc.match(line)
 	if (obj):
-		if obj.group(1) in VARS.keys():
-			var = obj.group(2)
-			op = obj.group(3)
-			var2 = obj.group(4)
-			if var.isdigit() and var2.isdigit():
-				if op == "+":
-					return str(int(var) + int(var2))
-				elif op == "-":
-					return str(int(var) - int(var2))
-			elif var.isdigit():
-				if not compar_types(obj.group(1),var2):
-					print("Error de tipos")
-					return exit(1)
-				var2 = get_val_value(var2,VARS)
-				if op == "+":
-					return str(int(var) + var2)
-				else:
-					return str(int(var) - var2)
-			elif var2.isdigit():
-				if compar_types(obj.group(1),var,VARS) == False:
-					print("Error de tipos")
-					return exit(1)
-				var = get_val_value(var,VARS)
-				if op == "+":
-					return str(var + int(var2))
-				else:
-					return str(var - int(var2))
-			else:
-				if compar_types(var,var2,VARS) == False:
-					print("Error de tipos")
-					return exit(1)
-				if compar_types(obj.group(1),var,VARS) == False:
-					print("Error de tipos")
-					return exit(1)
-				var = get_val_value(var,VARS)
-				var2 = get_val_value(var2,VARS)
-				if op == "+":
-					return str(var + var2)
-				else:
-					return str(var - var2)
+		var = obj.group(1)
+		op = obj.group(2)
+		var2 = obj.group(3)
+		if (var.isdigit() or isfloat(var)) and (var2.isdigit() or isfloat(var2)):
+			if op == "+":
+				return float(var) + float(var2)
 		else:
 			print("Variable "+obj.group(1)+" no declarada")
 			return exit(1)
@@ -1209,6 +965,29 @@ def operation(line,VARS):
 	print("Error de Sintaxis --> ",line)
 	exit(1)
 
+
+def identifier(line):
+	if LET in line:
+		return LET
+	elif WHILE in line:
+		return WHILE
+	elif ELSE_IF in line:
+		return ELSE_IF
+	elif IF in line:
+		return IF
+	elif ELSE in line:
+		return ELSE
+	elif RETURN in line:
+		return RETURN
+	elif FN in line:
+		return FN
+	elif END in line:
+		return END
+	elif PRINT in line:
+		return PRINT
+	else:
+		return SENT
+
 def isfloat(a):
 	if "." in a:
 		return True
@@ -1245,6 +1024,27 @@ def exe_func(nombre,val,VARS):
 			return ret_fun(line,Funciones[nombre][0][1],VARS_Local)
 
 
+def ret_fun(line,tipo,VARS):
+	obj = retorno_var_val.match(line)
+	if obj:
+		var = obj.group(1)
+		if var.isdigit():
+			return var
+		else:
+			var = VARS[var]
+			return var
+	obj = retorno_opsc.match(line)
+	if obj:
+		return operation(line,VARS)
+	obj = retorno_cd
+	if obj:
+		return operation(line,VARS)
+	obj = retorno_ci
+	if obj:
+		return operation(line,VARS)
+	obj = retorno_dc
+	if obj:
+		return operation(line,VARS)
 
 def main():
 	fp = open("codigo_rust.txt","r")
@@ -1266,8 +1066,11 @@ def main():
 			print("Evaluando if")
 			DIC= if_exec(line,fp,DIC)
 		elif a == LET:
+			print("Declarando: ",line)
 			DIC = declaration(line,DIC)
+			print(DIC)
 		elif a == SENT:
+			print("Sentenciando: ",line)
 			DIC = sentence(line,DIC)
 		elif a == PRINT:
 			println(line,DIC)
