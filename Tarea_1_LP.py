@@ -1,7 +1,7 @@
 import re
 
 Variables = dict()  # Key -> Variable ; Value -> [valor, tipo] 
-Funciones = dict()  #
+Funciones = dict()  # Key -> Nombre de la funcion ; Value -> [(operando,tipo entrada,tipo salida),sentencias] 
 In_Fun = None
 In_While = None
 Cond_Done = False
@@ -17,45 +17,47 @@ END = "}"
 PRINT = "println!"
 
 
-var_val = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\d*|\d*\.\d*)\s*;")
-var_var = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w+)\s*;")
-var_func = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\((\w*)\)\s*;")
-var_op = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w+)\s*(\+|\-)\s*(\w+)\s*;")
-var_op_cast = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
-var_op_valcasti = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)\s*;")
-var_op_valcastd = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
+var_val = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\d*|\d*\.\d*);")
+var_var = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w+);")
+var_func = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\((\w*)\);")
+var_op = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w+)\s*(\+|\-)\s*(\w+);")
+var_op_cast = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\);")
+var_op_valcasti = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s(\w*);")
+var_op_valcastd = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
 var_op_cast_cast = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
-sent_val = re.compile("(\w*)\s*=\s*(\w*)\s*;")
+sent_val = re.compile("(\w*)\s*=\s*(\w*);")
 obj_bool = re.compile("(\w*)\s*(<|>|=|>=|<=)\s*(\w*)")
-sent_var = re.compile("(\w*)\s*=\s*(\w*)\s*;")
+sent_var = re.compile("(\w*)\s*=\s*(\w*);")
 sent_func = re.compile("(\w*)\s*=\s*(\w*)\((\w*)\)\s*;")
-sent_op = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)+\s*(\w*)\s*;")
-sent_op_cast = re.compile("(\w*)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
+sent_op = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)+\s*(\w*);")
+sent_op_cast = re.compile("(\w*)\s*=\s*\((\w*)\sas\s(i16|i32|f64)\);")
 sent_op_valcasti = re.compile("(\w*)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)\s*;")
 sent_op_valcastd = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
-sent_op_doublecast = re.compile("(\w+)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)+\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
-op_sc = re.compile("(\w*|\d*)\s*(\+|\-)\s*(\w*|\d*)\s*")
-op_cd = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)\s*")
-op_ci = re.compile("(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*")
+sent_op_doublecast = re.compile("(\w+)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)+\s*\((\w*)\sas\s*(i16|i32|f64)\);")
+op_sc = re.compile("(\w*|\d*)\s*(\+|\-)\s*(\w*|\d*)")
+op_cd = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)")
+op_ci = re.compile("(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\)")
 op_func_de = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)\s*(\w*)\((\w*)\)\s*;")
-op_func_iz = re.compile("(\w*)\s*=\s*(\w*)\((\w*)\)\s*(\+|\-)\s*(\w*)\s*;")
+op_func_iz = re.compile("(\w*)\s*=\s*(\w*)\((\w*)\)\s*(\+|\-)\s*(\w*);")
 op_func_do = re.compile("(\w*)\s*=\s*(\w*)\((\w*)\)\s*(\+|\-)\s*(\w*)\((\w*)\)\s*;")
-cast = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)\s*")
-while_sent = re.compile("while\s*(\w*)\s*(<|>|=|>=|<=)\s*(\w*|\d*\.\d*)\s*{")
-if_sent = re.compile("if\s*(\w*)\s*(<|>|=|>=|<=)\s*(\w*|\d*\.\d*)\s*{")
-elseif_sent = re.compile("}\s*else if\s*([A-z])\s*(<=|>=|>|<|=)\s*([A-z]+|[0-9]+)\s*{")
+cast = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)")
+while_sent = re.compile("while\s(\w*)\s*(<|>|=|>=|<=)\s*(\w*)\s*{")
+if_sent = re.compile("if\s(\w*)\s*(<|>|=|>=|<=)\s*(\w*)\s*{")
+elseif_sent = re.compile("} else if ([A-z]) (<=|>=|>|<|=) ([A-z]+|[0-9]+) {")
 else_sent= re.compile("}\s*else\s*{")
 end_while = end_func = end_if = re.compile("}")
-retorno_var_val = re.compile("return\s(\w*)\s*;")
-retorno_opsc = re.compile("return\s(\w*|\d*)\s*(\+|\-)\s(\w*|\d*)\s*;")
-retorno_ci = re.compile("return\s(\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*))\s*;")
-retorno_cd = re.compile("return\s(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
-retorno_dc = re.compile("return\s\((\w+)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\w*)+\sas\s*(i16|i32|f64)\)\s*;")
-func = re.compile("fn\s*(\w*)\((\w*)\s*:\s*(i16|i32|f64)+\)\s*->\s*(i16|i32|f64)\s*{")
+retorno_var_val = re.compile("return\s(\w*);")
+retorno_opsc = re.compile("return\s(\w*|\d*)\s*(\+|\-)\s(\w*|\d*);")
+retorno_ci = re.compile("return\s(\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*));")
+retorno_cd = re.compile("return\s(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
+retorno_dc = re.compile("return\s\((\w+)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\w*)+\sas\s*(i16|i32|f64)\);")
+func = re.compile("fn\s*(\w*)\((\w*):\s(i16|i32|f64)+\)\s*->\s*(i16|i32|f64)+{")
 func_main = re.compile("fn main\(\)\s*{")
 print_ln = re.compile("println!\s*\((\w+)\);")
 
 def if_exec_static(line,lista,VARS):
+	if tuple == type(VARS):
+		VARS = VARS[0]
 	llaves_abiertas = 1
 	COND = False
 	obj = if_sent.match(line)
@@ -212,6 +214,8 @@ def while_list_static(line,lista):
 	return lista_while
 
 def exe_while_static(lista_while,lista,VARS):
+	if tuple == type(VARS):
+		VARS = VARS[0]
 	Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
 	print("While a ejecutar --> ",lista)
 	while Flag:
@@ -240,6 +244,8 @@ def exe_while_static(lista_while,lista,VARS):
 	return VARS,lista
 
 def exe_while(lista_while,fp,VARS):
+	if tuple == type(VARS):
+		VARS = VARS[0]
 	print("-------------- Entrando While --------------------")
 	print("Lista While -> ",lista_while)
 	Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
@@ -265,7 +271,7 @@ def exe_while(lista_while,fp,VARS):
 			elif a == WHILE:
 				print(line)
 				lista_while2 = while_list_static(line,lista_aux)
-				VARS = exe_while_static(lista_while2,fp,VARS)
+				VARS = exe_while_static(lista_while2,lista_aux,VARS)
 			elif "}" in line:
 				llaves = llaves - 1
 				if llaves == 0:
@@ -338,7 +344,6 @@ def store_fun(line,fp):
 	return True
 
 def while_list(line,fp):
-	fp2 = fp
 	obj = while_sent.match(line)
 	var1 = obj.group(1)
 	cond = obj.group(2)
@@ -346,7 +351,7 @@ def while_list(line,fp):
 	lista = list()
 	lista.append((var1,cond,var2))
 	llaves_abiertas = 1
-	for line in fp2:
+	for line in fp:
 		line = line.strip("\n")
 		line = line.strip("\t")
 		print("Linea lista: ",line)
@@ -816,6 +821,16 @@ def declaration(line,VARS): # En Desarrollo
 		else:
 			print("Error de tipo")
 			exit(1)
+	obj = var_op_cast.match(line)
+	print(line)
+	if obj:
+		var = obj.group(1)
+		tipo = obj.group(2)
+		var2 = obj.group(3)
+		cast = obj.group(4)
+		if cast == tipo:
+			VARS[var] = [VARS[var2][0],tipo]
+			return VARS
 	obj = var_op_cast_cast.search(line)
 	if obj:
 		if compar_types(obj.group(3),obj.group(6)):
@@ -845,6 +860,8 @@ def declaration(line,VARS): # En Desarrollo
 	exit(1)
 
 def up_val(var,valor,tipo,VARS):
+	if tuple == type(VARS):
+		VARS = VARS[0]
 	VARS[var] = [valor,tipo]
 	return VARS
 
@@ -861,7 +878,9 @@ def cast(var,tipo,VARS): ###
 	VARS[var][1] = tipo
 
 def get_val_type(var,VARS):
-		return VARS[var][1]
+	if tuple == type(VARS):
+		VARS = VARS[0]
+	return VARS[var][1]
 
 def get_val_value(var,VARS):
 	if tuple == type(VARS):
@@ -872,6 +891,8 @@ def get_val_value(var,VARS):
 		return float(VARS[var][0])
 
 def operation(line,VARS):
+	if tuple == type(VARS):
+		VARS = VARS[0]
 	obj = op_sc.match(line)
 	if (obj):
 		var = obj.group(1)
@@ -1126,6 +1147,8 @@ def isfloat(a):
 		return False
 
 def exe_func(nombre,val,VARS):
+	if tuple == type(VARS):
+		VARS = VARS[0]
 	lista = Funciones[nombre][1:]
 	if val.isdigit():
 		VARS_Local = dict()
@@ -1180,7 +1203,7 @@ def ret_fun(line,tipo,VARS):
 def main():
 	fp = open("codigo_rust2.txt","r")
 	global ERROR
-	ERROR = fp
+	ERROR = print(fp)
 	i = 1
 	DIC = dict()
 	for line in fp:
