@@ -17,56 +17,43 @@ END = "}"
 PRINT = "println!"
 
 
-var_val = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\d*|\d*\.\d*)\s*;")
-var_var = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w+)\s*;")
-var_func = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\((\w*)\)\s*;")
-var_op = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w+)\s*(\+|\-)\s*(\w+)\s*;")
-var_op_cast = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
-var_op_valcasti = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)\s*;")
-var_op_valcastd = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
+var_val = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\d*|\d*\.\d*);")
+var_var = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w+);")
+var_func = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\((\w*)\);")
+var_op = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w+)\s*(\+|\-)\s*(\w+);")
+var_op_cast = re.compile("let mut\s*(\w+)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\);")
+var_op_valcasti = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s(\w*);")
+var_op_valcastd = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
 var_op_cast_cast = re.compile("let mut\s*(\w*)\s*:\s*(i16|i32|f64)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
-sent_val = re.compile("(\w*)\s*=\s*(\w*)\s*;")
+sent_val = re.compile("(\w*)\s*=\s*(\w*);")
 obj_bool = re.compile("(\w*)\s*(<|>|=|>=|<=)\s*(\w*)")
-sent_var = re.compile("(\w*)\s*=\s*(\w*)\s*;")
+sent_var = re.compile("(\w*)\s*=\s*(\w*);")
 sent_func = re.compile("(\w*)\s*=\s*(\w*)\((\w*)\)\s*;")
-sent_op = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)+\s*(\w*)\s*;")
-sent_op_cast = re.compile("(\w*)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
+sent_op = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)+\s*(\w*);")
+sent_op_cast = re.compile("(\w*)\s*=\s*\((\w*)\sas\s(i16|i32|f64)\);")
 sent_op_valcasti = re.compile("(\w*)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)\s*;")
 sent_op_valcastd = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
-sent_op_doublecast = re.compile("(\w+)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)+\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
-op_sc = re.compile("(\w*|\d*)\s*(\+|\-)\s*(\w*|\d*)\s*")
-op_cd = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)\s*")
-op_ci = re.compile("(\w*)\s*(\+|\-)\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*")
+sent_op_doublecast = re.compile("(\w+)\s*=\s*\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)+\s*\((\w*)\sas\s*(i16|i32|f64)\);")
+op_sc = re.compile("(\w*|\d*)\s*(\+|\-)\s*(\w*|\d*)")
+op_cd = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*)")
+op_ci = re.compile("(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\)")
 op_func_de = re.compile("(\w*)\s*=\s*(\w*)\s*(\+|\-)\s*(\w*)\((\w*)\)\s*;")
-op_func_iz = re.compile("(\w*)\s*=\s*(\w*)\((\w*)\)\s*(\+|\-)\s*(\w*)\s*;")
+op_func_iz = re.compile("(\w*)\s*=\s*(\w*)\((\w*)\)\s*(\+|\-)\s*(\w*);")
 op_func_do = re.compile("(\w*)\s*=\s*(\w*)\((\w*)\)\s*(\+|\-)\s*(\w*)\((\w*)\)\s*;")
-cast = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)\s*")
-while_sent = re.compile("while\s*(\w*)\s*(<|>|=|>=|<=)\s*(\w*|\d*\.\d*)\s*{")
-if_sent = re.compile("if\s*(\w*)\s*(<|>|=|>=|<=)\s*(\w*|\d*\.\d*)\s*{")
-elseif_sent = re.compile("}\s*else if\s*([A-z])\s*(<=|>=|>|<|=)\s*([A-z]+|[0-9]+)\s*{")
+cast = re.compile("\((\w*)\s*as\s*(i16|i32|f64)\)")
+while_sent = re.compile("while\s(\w*)\s*(<|>|=|>=|<=)\s*(\w*)\s*{")
+if_sent = re.compile("if\s(\w*)\s*(<|>|=|>=|<=)\s*(\w*)\s*{")
+elseif_sent = re.compile("} else if ([A-z]) (<=|>=|>|<|=) ([A-z]+|[0-9]+) {")
 else_sent= re.compile("}\s*else\s*{")
 end_while = end_func = end_if = re.compile("}")
-retorno_var_val = re.compile("return\s(\w*)\s*;")
-retorno_opsc = re.compile("return\s(\w*|\d*)\s*(\+|\-)\s(\w*|\d*)\s*;")
-retorno_ci = re.compile("return\s(\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*))\s*;")
-retorno_cd = re.compile("return\s(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\)\s*;")
-retorno_dc = re.compile("return\s\((\w+)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\w*)+\sas\s*(i16|i32|f64)\)\s*;")
-func = re.compile("fn\s*(\w*)\((\w*)\s*:\s*(i16|i32|f64)+\)\s*->\s*(i16|i32|f64)\s*{")
+retorno_var_val = re.compile("return\s(\w*);")
+retorno_opsc = re.compile("return\s(\w*|\d*)\s*(\+|\-)\s(\w*|\d*);")
+retorno_ci = re.compile("return\s(\((\w*)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*(\w*));")
+retorno_cd = re.compile("return\s(\w*)\s*(\+|\-)\s\((\w*)\s*as\s*(i16|i32|f64)\);")
+retorno_dc = re.compile("return\s\((\w+)\s*as\s*(i16|i32|f64)\)\s*(\+|\-)\s*\((\w*)+\sas\s*(i16|i32|f64)\);")
+func = re.compile("fn\s*(\w*)\((\w*):\s(i16|i32|f64)+\)\s*->\s*(i16|i32|f64)+{")
 func_main = re.compile("fn main\(\)\s*{")
 print_ln = re.compile("println!\s*\((\w+)\);")
-
-
-"""
-if_exec_static(line,lista,VARS): Ejecuta los ifs dentro de las funciones.
-Inputs:
-(string): Linea que lee del archivo.
-(lista): Lista con todas las sentencias del if.
-(diccionario): Diccionario con las variables del ambito.
-..
-Outputs:
-(diccionario): Diccionario varibles actualizado.
-(lista): Lista con sentencias hasta donde se ejecuto.
-"""
 
 def if_exec_static(line,lista,VARS):
 	llaves_abiertas = 1
@@ -182,15 +169,7 @@ def if_exec_static(line,lista,VARS):
 			if llaves_abiertas == 0:
 				break
 	return VARS,lista
-"""
-while_list_static(line,lista) : Crea una lista con las sentencias del while.
-Inputs:
-(string): Linea del archivo.
-(list): Lista sentencias de la funcion.
-..
-Outputs:
-(list): Lista con las sentencias del while.
-"""
+
 def while_list_static(line,lista):
 	obj = while_sent.match(line)
 	var1 = obj.group(1)
@@ -202,6 +181,7 @@ def while_list_static(line,lista):
 	print("______________________________")
 	print("Creando Lista",lista_while)
 	print("______________________________")
+	lista.pop(0)
 	while llaves_abiertas > 0:
 		print("Creando Lista",lista_while)
 		line = lista[0]
@@ -231,18 +211,6 @@ def while_list_static(line,lista):
 	print("______________________________")
 	return lista_while
 
-"""
-exe_while_static(lista_while,lista,VARS) : Ejecuta el ciclo while dentro de la funcion.
-Inputs:
-(list): Lista con las sentencias del while.
-(list): Lista de sentencias por leer de la funcion.
-(dict): Diccionaro con las variables del ambito.
-..
-Outputs:
-(list): Lista con las sentencias que faltan por leer de la funcion.
-(var): Diccionario con las variables actualizadas.
-"""
-
 def exe_while_static(lista_while,lista,VARS):
 	Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
 	print("While a ejecutar --> ",lista)
@@ -270,17 +238,6 @@ def exe_while_static(lista_while,lista,VARS):
 		if Flag == False:
 			break
 	return VARS,lista
-
-"""
-def exe_while(lista_while,fp,VARS):  Ejecuta el ciclo while dentro del main.
-Inputs:
-(list): Lista con la sentencias del while.
-(file obj): Archivo que se esta leyendo.
-(dict):  Diccionario con las variables del ambito.
-..
-Outputs:
-(dict): Diccionario varibles actualizadas.
-"""
 
 def exe_while(lista_while,fp,VARS):
 	print("-------------- Entrando While --------------------")
@@ -322,17 +279,6 @@ def exe_while(lista_while,fp,VARS):
 	print("-------------- Saliendo While --------------------")
 	return VARS
 
-"""
-bool(var,cond,var2,VARS): Evalua si es verdadero o falso la expresion.
-Inputs:
-(string): Variable.
-(string): Variable o valor.
-(dict): Diccinario de las variables del ambito.
-..
-Outputs:
-(boolean): False si no se cumple.
-(boolean): True si se cumple.
-"""
 def bool(var,cond,var2,VARS):
 	if var2.isdigit():
 		var = get_val_value(var,VARS)
@@ -360,35 +306,13 @@ def bool(var,cond,var2,VARS):
 		print("Error de Sintaxis")
 		exit(1)
 
-
-"""
-println(line,VARS): Imprime el valor y el tipo de la varible.
-Inputs:
-(string) Linea donde este el print.
-(dict) Diccionario con las variables del ambito.
-..
-Outputs:
-(string): Mensaje con el valor y tipo.
-
-"""
 def println(line,VARS):
 	obj = print_ln.match(line)
 	var = obj.group(1)
-	valor = get_val_value(var,VARS)
 	type_var = VARS[var][1]
-	print("El valor es: "+str(valor)+". Su tipo es: "+type_var)
+	print("El valor es: "+var+". Su tipo es: "+type_var)
 
-"""
-store_fun(line,fp): Guarda las funciones en un diccionario.
-Inputs:
-(str): Linea que se esta leyendo.
-(file obj): Archivo que se esta leyendo.
-..
-Outputs:
-(None): Si es la funcion main.
-(True): Si hace la operacion con exito.
 
-"""
 def store_fun(line,fp):
 	obj = func_main.match(line)
 	if obj:
@@ -413,16 +337,6 @@ def store_fun(line,fp):
 		Funciones[name_func].append(line)
 	return True
 
-"""
-while_list(line,fp) : Guarda el ciclo while en una lista.
-Inputs:
-(str): Linea que se esta leyendo.
-(file obj): Archivo que se esta leyendo.
-..
-Outputs:
-(list): Lista con las sentencias del while.
-
-"""
 def while_list(line,fp):
 	fp2 = fp
 	obj = while_sent.match(line)
@@ -449,18 +363,6 @@ def while_list(line,fp):
 		if llaves_abiertas == 0:
 			break
 	return lista
-
-"""
-if_exec(line,fp,VARS) : Ejecuta el if dentro del main.
-Inputs:
-(str): Linea que se esta leyendo.
-(file obj): Archivo que se esta leyendo.
-(dict): Diccionario con las variables del ambito.
-..
-Outputs:
-(dict): Diccionario con las variables actualizadas.
-
-"""
 
 def if_exec(line,fp,VARS):
 	print("-------------- Entrando If --------------")
@@ -585,17 +487,6 @@ def if_exec(line,fp,VARS):
 	print("-------------- Saliendo If --------------")
 	return VARS
 
-"""
-sentence(line,VARS) : Evalua la sintaxis y ejecuta las linas que recibe.
-Inputs:
-(str): Linea que se esta leyendo.
-(file obj): Archivo que se esta leyendo.
-
-Outputs:
-(dict): Diccionario con las variables actualizadas.
-(systemExit): Salida en el caso de haber error.
-
-"""
 def sentence(line,VARS):
 	line = line.strip("\t")
 	line = line.strip("\n")
@@ -852,50 +743,15 @@ def sentence(line,VARS):
 	exit(1)
 
 
-
-
-"""
-float_to_int(var,VARS) : Cambia el string de float a entero.
-Inputs:
-(str): Variable que se va a modificar.
-(dict): Diccinario con las variables del ambito.
-
-..
-Outputs:
-(string): Valor modificado.
-
-"""
 def float_to_int(var,VARS):
 	var = VARS[var][0].split(".")[0]
 	return var
 
-"""
-float_to_int(var,VARS) : Cambia el string de entero a float.
-Inputs:
-(str): Variable que se va a modificar.
-(dict): Diccinario con las variables del ambito.
-
-..
-Outputs:
-(string): Valor modificado.
-
-"""
 def int_to_float(var,VARS):
 	var = VARS[var][0]+".0"
 	return var
 
-"""
-declaration(line,VARS) : Declara las variables que se van a utilizar.
-Inputs:
-(str: Linea que esta leyendo del archivo.
-(dict): Diccionario con las variables del ambito.
-..
-Outputs:
-(systemExit): Salida en caso de error.
-(dict): Diccionario con las variables actualizadas.
-
-"""
-def declaration(line,VARS): 
+def declaration(line,VARS): # En Desarrollo
 	obj = var_val.search(line)
 	if(obj):
 		var = obj.group(1)
@@ -988,75 +844,25 @@ def declaration(line,VARS):
 	print("No Definido")
 	exit(1)
 
-"""
-up_val(var,valor,tipo,VARS): Agrega una variable al diccionario.
-Inputs:
-(string): Variable que se va a agregar.
-(string): Valor de la variable.
-(string): Tipo de la variable.
-..
-Outputs:
-(dict): Diccionaro con las variables actualizadas.
-
-"""
 def up_val(var,valor,tipo,VARS):
 	VARS[var] = [valor,tipo]
 	return VARS
-"""
-compar_types(var1,var2,VARS) : Compara el tipo de dos variables.
-Inputs:
-(string): Primera variable.
-(string): Segunda variable.
-(dict): Diccionario con las variables del ambito.
-..
-Outputs:
-(systemExit): Salida en el caso de error.
-(boolean): En el caso que se sean iguales.
 
-"""
-def compar_types(var1,var2,VARS):
+def compar_types(var1,var2,VARS): ###
 	if VARS[var1][1] == VARS[var2][1]:
 		return True
 	else:
 		print("Error de tipo")
 		return exit(1)
-"""
-cast(var,tipo,VARS) : Cambia el tipo de la variable en el caso de ser necesario.
 
-Inputs:
-(string): Variable que se va a castear.
-(string): Tipo al que se va a cambiar.
-(dict): Diccionario con las variables del ambito.
-..
-Outputs:
-(systemExit): Salida en caso de error.
-(dict): Diccionario con las variables actualizadas.
-"""
-def cast(var,tipo,VARS): 
+def cast(var,tipo,VARS): ###
 	if var not in VARS.keys():
 		return exit(1)
 	VARS[var][1] = tipo
-"""
-get_val_type(var,VARS) : Obtiene el tipo de la variable.
-Inputs:
-(string): Variable que se desea saber el tipo.
-(dict): Diccionario con las variables del ambito.
-..
-Outputs:
-(dict): Diccionario con las variables actualizadas.
 
-"""
 def get_val_type(var,VARS):
 		return VARS[var][1]
-"""
-get_val_value(var,VARS) : breve descripcion
-Inputs:
-(tipo dato) descripcion
-..
-Outputs:
-(tipo dato) descripcion
-..
-"""
+
 def get_val_value(var,VARS):
 	if tuple == type(VARS):
 		VARS = VARS[0]
@@ -1065,15 +871,6 @@ def get_val_value(var,VARS):
 	else:
 		return float(VARS[var][0])
 
-"""
-nombre_funcion(parametros) : breve descripcion
-Inputs:
-(tipo dato) descripcion
-..
-Outputs:
-(tipo dato) descripcion
-..
-"""
 def operation(line,VARS):
 	obj = op_sc.match(line)
 	if (obj):
@@ -1299,15 +1096,7 @@ def operation(line,VARS):
 	print("Error de Sintaxis --> ",line)
 	exit(1)
 
-"""
-nombre_funcion(parametros) : breve descripcion
-Inputs:
-(tipo dato) descripcion
-..
-Outputs:
-(tipo dato) descripcion
-..
-"""
+
 def identifier(line):
 	if LET in line:
 		return LET
@@ -1329,29 +1118,13 @@ def identifier(line):
 		return PRINT
 	else:
 		return SENT
-"""
-nombre_funcion(parametros) : breve descripcion
-Inputs:
-(tipo dato) descripcion
-..
-Outputs:
-(tipo dato) descripcion
-..
-"""
+
 def isfloat(a):
 	if "." in a:
 		return True
 	else:
 		return False
-"""
-nombre_funcion(parametros) : breve descripcion
-Inputs:
-(tipo dato) descripcion
-..
-Outputs:
-(tipo dato) descripcion
-..
-"""
+
 def exe_func(nombre,val,VARS):
 	lista = Funciones[nombre][1:]
 	if val.isdigit():
@@ -1381,15 +1154,7 @@ def exe_func(nombre,val,VARS):
 		elif a == RETURN:
 			return ret_fun(line,Funciones[nombre][0][1],VARS_Local)
 
-"""
-nombre_funcion(parametros) : breve descripcion
-Inputs:
-(tipo dato) descripcion
-..
-Outputs:
-(tipo dato) descripcion
-..
-"""
+
 def ret_fun(line,tipo,VARS):
 	obj = retorno_var_val.match(line)
 	if obj:
