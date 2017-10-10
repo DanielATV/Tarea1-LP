@@ -55,17 +55,6 @@ func = re.compile("fn\s*(\w*)\((\w*)\s*:\s*(i16|i32|f64)+\)\s*->\s*(i16|i32|f64)
 func_main = re.compile("fn main\(\)\s*{")
 print_ln = re.compile("println!\s*\((\w+)\);")
 
-"""
-if_exec_static(line,lista,VARS): Ejecuta los ifs dentro de las funciones.
-Inputs:
-(string): Linea que lee del archivo.
-(lista): Lista con todas las sentencias del if.
-(diccionario): Diccionario con las variables del ambito.
-..
-Outputs:
-(diccionario): Diccionario varibles actualizado.
-(lista): Lista con sentencias hasta donde se ejecuto.
-"""
 
 
 def if_exec_static(line,lista,VARS):
