@@ -306,19 +306,19 @@ def exe_while(lista_while,fp,VARS):
 			if a == SENT:
 				VARS = sentence(line,VARS)
 				lista_aux.pop(0)
-				print(VARS)
+				#print(VARS)
 			elif a == IF:
 				VARS = if_exec(line,fp,VARS)
-				print(VARS)
+				#print(VARS)
 			elif a == WHILE:
-				print(line)
+				#print(line)
 				lista_while2 = while_list_static(line,lista_aux)
 				VARS = exe_while_static(lista_while2,lista_aux,VARS)
 			elif "}" in line:
 				llaves = llaves - 1
 				if llaves == 0:
 					break
-		print(lista_while)
+		#print(lista_while)
 		Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
 		if Flag == False:
 			break
@@ -787,7 +787,7 @@ def sentence(line,VARS):
 		var = obj.group(1)
 		func = obj.group(2)
 		var2 = obj.group(3)
-		print(VARS[var][1],Funciones[func][0][2])
+		#print(VARS[var][1],Funciones[func][0][2])
 		if VARS[var][1] == Funciones[func][0][2]:
 			VARS[var][0] = exe_func(func,var2,VARS)
 			return VARS
@@ -802,15 +802,15 @@ def sentence(line,VARS):
 		op = obj.group(3)
 		func = obj.group(4)
 		var3 = obj.group(5)
-		print(var,var2,op,func,var3)
-		print(VARS[var][1],Funciones[func][0][2])
+		#print(var,var2,op,func,var3)
+		#print(VARS[var][1],Funciones[func][0][2])
 		if VARS[var][1] == Funciones[func][0][2]:
-			print(var2,func,var3)
+			#print(var2,func,var3)
 			aux = exe_func(func,var3,VARS)
-			print(aux)
-			print(var,var2,func,var3,aux)
+			#print(aux)
+			#print(var,var2,func,var3,aux)
 			VARS[var][0] = operation(var2+" "+op+" "+aux[0]+";",VARS)
-			print(VARS)
+			#print(VARS)
 			return VARS
 		else:
 			print("Error de Tipo")
