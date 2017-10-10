@@ -283,35 +283,43 @@ Outputs:
 """
 
 def exe_while(lista_while,fp,VARS):
+	print("-------------- Entrando While --------------------")
+	print("Lista While -> ",lista_while)
 	Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
+	i = 1
 	while Flag:
+		print("----------------------")
+		lista_aux = lista_while[1:]
+		print("Ciclo n: ",i)
 		llaves = 1
-		for line in lista_while[1:]:
-			print(llaves)
+		while len(lista_aux) > 0:
+			line = lista_aux[0]
 			line = line.strip("\n")
 			line = line.strip("\t")
 			print(line)
 			a = identifier(line)
 			if a == SENT:
-				print("While - Sentencia")
 				VARS = sentence(line,VARS)
+				lista_aux.pop(0)
 				print(VARS)
 			elif a == IF:
-				print("While - If")
 				VARS = if_exec(line,fp,VARS)
 				print(VARS)
 			elif a == WHILE:
 				print(line)
-				lista_while2 = while_list(line,fp)
-				print("Lista While Anidado --> ",lista_while2)
-				print(lista_while)
-				VARS = exe_while(lista_while2,fp,VARS)
+				lista_while2 = while_list_static(line,lista_aux)
+				VARS = exe_while_static(lista_while2,fp,VARS)
 			elif "}" in line:
 				llaves = llaves - 1
-			Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
-			if Flag == False or llaves == 0:
-				break
-		Flag = False
+				if llaves == 0:
+					break
+		print(lista_while)
+		Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
+		if Flag == False:
+			break
+		i = i + 1
+		print("----------------------")
+	print("-------------- Saliendo While --------------------")
 	return VARS
 
 """
@@ -594,6 +602,8 @@ def sentence(line,VARS):
 	obj = sent_op.match(line)
 	if (obj):
 		print(VARS)
+		if tuple == type(VARS):
+			VARS = VARS[0]
 		if obj.group(1) in VARS.keys():
 			var = obj.group(2)
 			op = obj.group(3)
@@ -841,6 +851,9 @@ def sentence(line,VARS):
 	print("no se encontro nada")
 	exit(1)
 
+
+
+
 """
 float_to_int(var,VARS) : Cambia el string de float a entero.
 Inputs:
@@ -1045,10 +1058,13 @@ Outputs:
 ..
 """
 def get_val_value(var,VARS):
-	if VARS[var][0].isdigit():
+	if tuple == type(VARS):
+		VARS = VARS[0]
+	if var.isdigit():
 		return int(VARS[var][0])
 	else:
 		return float(VARS[var][0])
+
 """
 nombre_funcion(parametros) : breve descripcion
 Inputs:
@@ -1398,6 +1414,8 @@ def ret_fun(line,tipo,VARS):
 
 def main():
 	fp = open("codigo_rust2.txt","r")
+	global ERROR
+	ERROR = print(fp)
 	i = 1
 	DIC = dict()
 	for line in fp:
