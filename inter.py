@@ -201,12 +201,12 @@ def while_list_static(line,lista):
 	lista_while = list()
 	lista_while.append((var1,cond,var2))
 	llaves_abiertas = 1
-	print("______________________________")
-	print("Creando Lista",lista_while)
-	print("______________________________")
+	#print("______________________________")
+	#print("Creando Lista",lista_while)
+	#print("______________________________")
 	lista.pop(0)
 	while llaves_abiertas > 0:
-		print("Creando Lista",lista_while)
+		#print("Creando Lista",lista_while)
 		line = lista[0]
 		line = line.strip("\n")
 		line = line.strip("\t")
@@ -229,9 +229,9 @@ def while_list_static(line,lista):
 			lista_while.append(line)
 		if llaves_abiertas == 0:
 			break
-	print("______________________________")
-	print("Lista Creada",lista_while)
-	print("______________________________")
+	#print("______________________________")
+	#print("Lista Creada",lista_while)
+	#print("______________________________")
 	return lista_while
 
 """
@@ -249,27 +249,27 @@ def exe_while_static(lista_while,lista,VARS):
 	if tuple == type(VARS):
 		VARS = VARS[0]
 	Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
-	print("While a ejecutar --> ",lista)
+	#print("While a ejecutar --> ",lista)
 	while Flag:
 		lista2 = lista
-		print("Inicio ciclo while")
-		print(VARS, "-->")
+		#print("Inicio ciclo while")
+		#print(VARS, "-->")
 		for line in lista_while[1:]:
 			line = line.strip("\n")
 			line = line.strip("\t")
-			print(lista_while)
+			#print(lista_while)
 			a = identifier(line)
 			if a == SENT:
-				print("While - Sentencia")
+				#print("While - Sentencia")
 				VARS = sentence(line,VARS)
 			elif a == IF:
-				print("While - If")
+				#print("While - If")
 				VARS,lista2 = if_exec_static(line,lista2,VARS)
 			elif a == WHILE:
 				lista_while = while_list_static(line,lista)
 				VARS,lista = exe_while_static(lista_while,lista,VARS)
-		print("-->",VARS)
-		print("Final ciclo while")
+		#print("-->",VARS)
+		#print("Final ciclo while")
 		Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
 		if Flag == False:
 			break
@@ -288,20 +288,20 @@ Outputs:
 def exe_while(lista_while,fp,VARS):
 	if tuple == type(VARS):
 		VARS = VARS[0]
-	print("-------------- Entrando While --------------------")
-	print("Lista While -> ",lista_while)
+	#print("-------------- Entrando While --------------------")
+	#print("Lista While -> ",lista_while)
 	Flag = bool(lista_while[0][0],lista_while[0][1],lista_while[0][2],VARS)
 	i = 1
 	while Flag:
 		print("----------------------")
 		lista_aux = lista_while[1:]
-		print("Ciclo n: ",i)
+		#print("Ciclo n: ",i)
 		llaves = 1
 		while len(lista_aux) > 0:
 			line = lista_aux[0]
 			line = line.strip("\n")
 			line = line.strip("\t")
-			print(line)
+			#print(line)
 			a = identifier(line)
 			if a == SENT:
 				VARS = sentence(line,VARS)
@@ -323,8 +323,8 @@ def exe_while(lista_while,fp,VARS):
 		if Flag == False:
 			break
 		i = i + 1
-		print("----------------------")
-	print("-------------- Saliendo While --------------------")
+		#print("----------------------")
+	#print("-------------- Saliendo While --------------------")
 	return VARS
 
 """
@@ -437,7 +437,7 @@ def while_list(line,fp):
 	for line in fp:
 		line = line.strip("\n")
 		line = line.strip("\t")
-		print("Linea lista: ",line)
+		#print("Linea lista: ",line)
 		a = identifier(line)
 		lista.append(line)
 		if llaves_abiertas == 0:
@@ -464,21 +464,21 @@ Outputs:
 
 """
 def if_exec(line,fp,VARS):
-	print("-------------- Entrando If --------------")
-	print(line)
+	#print("-------------- Entrando If --------------")
+	#print(line)
 	llaves_abiertas = 1
 	COND = True
 	obj = if_sent.match(line)
 	if obj and COND:
-		print("Match con IF")
+		#print("Match con IF")
 		boolean = bool(obj.group(1),obj.group(2),obj.group(3),VARS)
 		if boolean:
-			print("If condicion cumplida")
+			#print("If condicion cumplida")
 			COND = False
 			for line in fp:
 				line = line.strip("\n")
 				line = line.strip("\t")
-				print (line)
+				#print (line)
 				a = identifier(line)
 				if a == IF:
 					VARS = if_exec(line,fp,VARS)
@@ -494,11 +494,11 @@ def if_exec(line,fp,VARS):
 				if "{" in line:
 					llaves_abiertas = llaves_abiertas + 1
 		else:
-			print("If condicion NO cumplida")
+			#print("If condicion NO cumplida")
 			for line in fp:
 				line = line.strip("\n")
 				line = line.strip("\t")
-				print (line)
+				#print (line)
 				a = identifier(line)
 				if "}" in line:
 					llaves_abiertas = llaves_abiertas - 1
@@ -508,16 +508,16 @@ def if_exec(line,fp,VARS):
 					llaves_abiertas = llaves_abiertas + 1
 	obj = elseif_sent.match(line)
 	if obj:
-		print("Match con ELSE IF")
+		#print("Match con ELSE IF")
 		boolean = bool(obj.group(1),obj.group(2),obj.group(3),VARS)
 		if boolean and COND:
-			print("ELSE If condicion cumplida")
+			#print("ELSE If condicion cumplida")
 			COND = False
 			llaves_abiertas = 1
 			for line in fp:
 				line = line.strip("\n")
 				line = line.strip("\t")
-				print (line)
+				#print (line)
 				a = identifier(line)
 				if a == IF:
 					VARS = if_exec(line,fp,VARS)
@@ -533,12 +533,12 @@ def if_exec(line,fp,VARS):
 				if "{" in line:
 					llaves_abiertas = llaves_abiertas + 1
 		else:
-			print("ELSE IF condicion NO cumplida")
+			#print("ELSE IF condicion NO cumplida")
 			for line in fp:
 				llaves_abiertas = 1
 				line = line.strip("\n")
 				line = line.strip("\t")
-				print (line)
+				#print (line)
 				a = identifier(line)
 				if "}" in line:
 					llaves_abiertas = llaves_abiertas - 1
@@ -550,11 +550,11 @@ def if_exec(line,fp,VARS):
 	if obj:
 		if COND:
 			llaves_abiertas = 1
-			print("Condicion ELSE Entra")
+			#print("Condicion ELSE Entra")
 			for line in fp:
 				line = line.strip("\n")
 				line = line.strip("\t")
-				print (line)
+				#print (line)
 				a = identifier(line)
 				if a == IF:
 					VARS = if_exec(line,fp,VARS)
@@ -570,12 +570,12 @@ def if_exec(line,fp,VARS):
 				if "{" in line:
 					llaves_abiertas = llaves_abiertas + 1
 		else:
-			print("ELSE Saltado")
+			#print("ELSE Saltado")
 			for line in fp:
 				llaves_abiertas = 1
 				line = line.strip("\n")
 				line = line.strip("\t")
-				print (line)
+				#print (line)
 				a = identifier(line)
 				if "}" in line:
 					llaves_abiertas = llaves_abiertas - 1
@@ -583,7 +583,7 @@ def if_exec(line,fp,VARS):
 						break
 				if "{" in line:
 					llaves_abiertas = llaves_abiertas + 1
-	print("-------------- Saliendo If --------------")
+	#print("-------------- Saliendo If --------------")
 	return VARS
 """
 sentence(line,VARS) : Evalua la sintaxis y ejecuta las linas que recibe.
@@ -601,7 +601,7 @@ def sentence(line,VARS):
 	line = line.strip("\n")
 	obj = sent_op.match(line)
 	if (obj):
-		print(VARS)
+		#print(VARS)
 		if tuple == type(VARS):
 			VARS = VARS[0]
 		if obj.group(1) in VARS.keys():
@@ -796,7 +796,7 @@ def sentence(line,VARS):
 			exit(1)
 	obj = op_func_de.match(line)
 	if obj:
-		print("MATCH")
+		#print("MATCH")
 		var = obj.group(1)
 		var2 = obj.group(2)
 		op = obj.group(3)
@@ -846,7 +846,7 @@ def sentence(line,VARS):
 			print("Error de Tipo")
 			exit(1)
 	if line == "":
-		print("Linea en Blanco, pasando ...")
+		#print("Linea en Blanco, pasando ...")
 		return VARS
 	print("no se encontro nada")
 	exit(1)
@@ -891,7 +891,7 @@ Outputs:
 
 """
 def declaration(line,VARS):
-	print(line)
+	#print(line)
 	obj = var_val.search(line)
 	if(obj):
 		var = obj.group(1)
@@ -957,7 +957,7 @@ def declaration(line,VARS):
 			print("Error de tipo")
 			exit(1)
 	obj = var_cast.match(line)
-	print(line)
+	#print(line)
 	if obj:
 		var = obj.group(1)
 		tipo = obj.group(2)
@@ -1007,8 +1007,8 @@ def declaration(line,VARS):
 
 	obj = var_op_valcastd.search(line)
 	if obj:
-		print(line)
-		print(obj.groups())
+		#print(line)
+		#print(obj.groups())
 		var = obj.group(1)
 		tipo = obj.group(2)
 		var1 = obj.group(3)
@@ -1187,7 +1187,7 @@ def operation(line,VARS):
 			return exit(1)
 
 	obj = sent_func.match(line)
-	if (obj):  # Falta La funcion que ejecuta las funciones para llamarla aca
+	if (obj): 
 		var = obj.group(1)
 		func = obj.group(2)
 		var2 = obj.group(3)
@@ -1415,9 +1415,9 @@ Outputs:
 
 """
 def exe_func(nombre,val,VARS):
-	print("----------------------")
-	print("Ejeutando Funcion")
-	print("----------------------")
+	#print("----------------------")
+	#print("Ejeutando Funcion")
+	#print("----------------------")
 	if tuple == type(VARS):
 		VARS = VARS[0]
 	lista = Funciones[nombre][1:]
@@ -1432,8 +1432,8 @@ def exe_func(nombre,val,VARS):
 		VARS_Local[Funciones[nombre][0][0]] = [VARS[val][0],Funciones[nombre][0][1]]
 	while len(lista) > 0:
 		line = lista[0]
-		print(lista)
-		print(VARS_Local)
+		#print(lista)
+		#print(VARS_Local)
 		line = line.strip("\n")
 		line = line.strip("\t")
 		a = identifier(line)
@@ -1441,7 +1441,7 @@ def exe_func(nombre,val,VARS):
 			lista_while = while_list_static(line,lista)
 			VARS_Local,lista = exe_while_static(lista_while,lista,VARS_Local)
 		elif a == IF:
-			print("IF Estatico")
+			#print("IF Estatico")
 			VARS_Local,lista = if_exec_static(line,lista,VARS_Local)
 		elif a == SENT:
 			VARS_Local = sentence(line,VARS_Local)
@@ -1461,7 +1461,7 @@ Outputs:
 
 """
 def ret_fun(line,tipo,VARS):
-	print("En Retorno")
+	#print("En Retorno")
 	obj = retorno_var_val.match(line)
 	if obj:
 		var = obj.group(1)
@@ -1521,9 +1521,9 @@ def main():
 			println(line,DIC)
 		else:
 			continue
-	print("Termino del Archivo\n\n")
-	print("Funciones -> ",Funciones,"\n")
-	print("Variables en Main -> ",DIC)
+	#print("Termino del Archivo\n\n")
+	#print("Funciones -> ",Funciones,"\n")
+	#print("Variables en Main -> ",DIC)
 
 if __name__ == '__main__':
 	main()
