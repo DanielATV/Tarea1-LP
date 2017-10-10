@@ -595,259 +595,152 @@ Outputs:
 (systemExit): Salida en el caso de haber error.
 
 """
-def sentence(line,VARS):
-	line = line.strip("\t")
-	line = line.strip("\n")
-	obj = sent_op.match(line)
-	if (obj):
-		print(VARS)
-		if tuple == type(VARS):
-			VARS = VARS[0]
-		if obj.group(1) in VARS.keys():
-			var = obj.group(2)
-			op = obj.group(3)
-			var2 = obj.group(4)
-			if var.isdigit() and var2.isdigit():
-				if op == "+":
-					VARS[obj.group(1)][0] = str(int(var) + int(var2))
-					return VARS
-				elif op == "-":
-					VARS[obj.group(1)][0] = str(int(var) - int(var2))
-					return VARS
-			elif var.isdigit():
-				if not compar_types(obj.group(1),var2,VARS):
-					print("Error de tipos")
-					return exit(1)
-				var2 = get_val_value(var2,VARS)
-				if op == "+":
-					VARS[obj.group(1)][0] = str(int(var) + var2)
-					return VARS
-				else:
-					VARS[obj.group(1)][0] = str(int(var) - var2)
-					return VARS
-			elif var2.isdigit():
-				if compar_types(obj.group(1),var,VARS):
-					pass
-				else:
-					print("Error de tipos")
-					return exit(1)
-				var = get_val_value(var,VARS)
-				if op == "+":
-					VARS[obj.group(1)][0] = str(var + int(var2))
-					return VARS
-				else:
-					VARS[obj.group(1)][0] = str(var - int(var2))
-					return VARS
-			else:
-				if not compar_types(var,var2,VARS):
-					print("Error de tipos")
-					return exit(1)
-				if not compar_types(obj.group(1),var,VARS):
-					print("Error de tipos")
-					return exit(1)
-				var = get_val_value(var,VARS)
-				var2 = get_val_value(var2,VARS)
-				if op == "+":
-					VARS[obj.group(1)][0] = str(var + var2)
-					return VARS
-				else:
-					VARS[obj.group(1)][0] = str(var - var2)
-					return VARS
-		else:
-			print("Variable "+obj.group(1)+" no declarada")
-			return exit(1)
-
-	obj = sent_val.match(line)
-	if (obj):
+def declaration(line,VARS): # En Desarrollo
+	print(line)
+	obj = var_val.search(line)
+	if(obj):
 		var = obj.group(1)
-		val = obj.group(2)
-		if var not in VARS.keys():
-			print("Variable "+var+" no definida")
-			return exit(1)
-		VARS[var][0] = val
+		tipo = obj.group(2) 
+		var2 = obj.group(3)
+		if isfloat(var2) and tipo in ["i16","i32"]:
+			print("Error de Tipo")
+			exit(1)
+		else:
+			VARS[var] = [var2,tipo]
+			
 		return VARS
-
-	obj = sent_var.match(line)
-	if (obj):
+	obj = var_var.search(line)
+	if(obj):
 		var = obj.group(1)
-		var2 = obj.group(2)
-		if var in VARS.keys() and var2 in VARS.keys():
-			if compar_types(var,var2):
-				VARS[var][0] = get_val_value(var2)
-			else:
-				print("Error de Tipo")
-				return exit(1)
-		else:
-			print("Variable o variables no definidas")
-	
-	obj = sent_op_cast.match(line)
-	if (obj):
-		var = obj.group(1)
-		var2 = obj.group(2)
-		cast = obj.group(3)
-		if var not in VARS.keys():
-			print("Variable "+var+" no definida")
-			return exit(1)
-		if cast == VARS[var][1]:
-			VARS[var][0] = var2
+		tipo = obj.group(2) 
+		var2 = obj.group(3)
+		if VARS[var2][1] == tipo:
+			VARS[var] = [VARS[var2][0],tipo]
+			return VARS
 		else:
 			print("Error de Tipo")
-			return exit(1)
-
-	obj = sent_op_valcastd.match(line)
-	if (obj):
+			exit(1)
+	obj = var_op.search(line)
+	if obj:
 		var = obj.group(1)
-		var2 = obj.group(2)
-		op = obj.group(3)
-		var3 = obj.group(4)
-		cast = obj.group(5)
-		if var2.isdigit():
-			if cast == VARS[var][1]:
-				if op == "+":
-					VARS[var][0] = str(int(VARS[var3][0]) + int(var2))
-					return VARS
-				else:
-					VARS[var][0] = str(int(var2) - int(var3))
-					return VARS
-		if cast == VARS[var2][1] and cast == VARS[var][1]:
-			if op == "+":
-				VARS[var][0] = str(int(VARS[var3][0]) + int(VARS[var2][0]))
-				return VARS
-			else:
-				VARS[var][0] = str(int(VARS[var2][0]) - int(var3))
-				return VARS
-		else:
-			print("Error de Tipo")
-			return exit(1)
-
-	obj = sent_op_valcasti.match(line)
-	if (obj):
-		var = obj.group(1)
-		var2 = obj.group(2)
-		cast = obj.group(3)
+		tipo = obj.group(2)
+		var2 = obj.group(3)
 		op = obj.group(4)
 		var3 = obj.group(5)
-		if var3.isdigit():
-			if cast == VARS[var][1]:
-				if op == "+":
-					VARS[var][0] = str(int(VARS[var2][0]) + int(var3))
-					return VARS
-				else:
-					VARS[var][0] = str(int(VARS[var2][0]) - int(var3))
-					return VARS
+		sent = var2+op+var3+";"
+		if (var2.isdigit() or isfloat(var2)) and (obj.group(5).isdigit() or isfloat(obj.group(5))):
+			VARS[var] = [operation(sent,VARS),tipo]
+			return VARS
+		elif (var2.isdigit() or isfloat(var2)):
+			if VARS[var3][1] == tipo:
+				VARS[var] = [operation(sent,VARS),tipo]
+				return VARS
 			else:
-				print("Error de Tipo")
+				print("Error Tipo")
 				exit(1)
-		if cast == VARS[var][1] and cast == VARS[var3][1]:
-			if op == "+":
-				VARS[var][0] = str(int(VARS[var3][0]) + int(VARS[var2][0]))
+		elif (var3.isdigit() or isfloat(var3)):
+			if VARS[var2][1] == tipo:
+				VARS[var] = [operation(sent,VARS),tipo]
 				return VARS
 			else:
-				VARS[var][0] = str(int(VARS[var2][0]) - int(VARS[var3][0]))
+				print("Error Tipo")
+				exit(1)
+		elif compar_types(obj.group(3),obj.group(5),VARS):
+			if get_val_type(obj.group(3),VARS) in ["i32","i16"]:
+				if tipo == VARS[var2][1]:
+					valor = operation(var2+op+var3+";",VARS)
+					VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
+					return VARS
+				else:
+					print("Error Tipo")
+					exit(1)
+			elif VARS[obj.group(3)][1]=="f64" and VARS[obj.group(3)][1]=="f64":
+				valor = operation(var2+op+var3+";",VARS)
+				VARS = up_val(obj.group(1),valor,obj.group(2),VARS)
+				return VARS
+		else:
+			print("Error de tipo")
+			exit(1)
+	obj = var_cast.match(line)
+	print(line)
+	if obj:
+		var = obj.group(1)
+		tipo = obj.group(2)
+		var2 = obj.group(3)
+		cast = obj.group(4)
+		if cast == tipo:
+			VARS[var] = [VARS[var2][0],tipo]
+			return VARS
+		else:
+			print("Error de Tipo")
+			exit(1)
+	obj = var_op_cast_cast.search(line)
+	if obj:
+		var = obj.group(1)
+		tipo = obj.group(2)
+		var1 = obj.group(3)
+		cast1 = obj.group(4)
+		op = obj.group(5)
+		var2 = obj.group(6)
+		cast2= obj.group(7)
+		if cast1 == cast2 and cast1 == tipo:
+			var1 = VARS[var1][0]
+			var2 = VARS[var2][0]
+			VARS[var] = [operation(var1+op+var2+";",VARS),tipo]
+			return VARS
+		else:
+			print("Error de Tipo")
+			exit(1)
+	obj = var_op_valcasti.search(line)
+	if obj:
+		var = obj.group(1)
+		tipo = obj.group(2)
+		var1 = obj.group(3)
+		cast = obj.group(4)
+		op = obj.group(5)
+		var2 = obj.group(6)
+		if var2 in VARS.keys() and VARS[var2][1] == cast and cast == tipo:
+				VARS[var] = [operation(VARS[var1][0]+op+VARS[var2][0]+";",VARS),tipo]
+				return VARS
+		elif var2.isdigit() or isfloat(var2):
+			if cast == tipo:
+				VARS[var] = [operation(VARS[var1][0]+op+var2[0]+";",VARS),tipo]
 				return VARS
 		else:
 			print("Error de Tipo")
-			return exit(1)
-	obj = sent_op_doublecast.match(line)
-	if (obj):
-		var = obj.group(1)
-		var1 = obj.group(2)
-		cast1 = obj.group(3)
-		op = obj.group(4)
-		var2 = obj.group(5)
-		cast2 = obj.group(6)
-		if(cast1 == cast2):
-			if cast1 in ["i16","i32"] and "f64" in VARS[var1]:
-				var1 = float_to_int(var1,VARS)
-			if cast2 in ["i16","i32"] and VARS[var2][1] == "f64":
-				var2 = float_to_int(var2,VARS)
-			if cast1 == "f64" and VARS[var1][1] in ["i16","i32"]:
-				var1 = int_to_float(var1,VARS)
-			if cast2 == "f64" and VARS[var2][1] in ["i16","i32"]:
-				var2 = int_to_float(var2,VARS)
-			if VARS[var][1] == cast1:
-				if cast1 == "f64" and op == "+":
-					VARS[var][0] = str(float(var1) + float(var2))
-				if cast1 == "f64" and op == "-":
-					VARS[var][0] = str(float(var1) - float(var2))
-				if cast1 in ["i16","i32"] and op == "+":
-					VARS[var][0] = str(int(VARS[var1][0]) + int(VARS[var2][0]))
-				if cast1 in ["i16","i32"] and op == "-":
-					VARS[var][0] = str(int(VARS[var1][0]) - int(VARS[var2][0]))
-			else:
-				print("Error de Tipo")
-				return exit(1)
-			return VARS
-		else:
-			print("Error de Tipo")
-			return exit(1)
-	obj = sent_func.match(line)
-	if obj:
-		var = obj.group(1)
-		func = obj.group(2)
-		var2 = obj.group(3)
-		print(VARS[var][1],Funciones[func][0][2])
-		if VARS[var][1] == Funciones[func][0][2]:
-			VARS[var][0] = exe_func(func,var2,VARS)
-			return VARS
-		else:
-			print("Error de Tipo")
 			exit(1)
-	obj = op_func_de.match(line)
+
+	obj = var_op_valcastd.search(line)
 	if obj:
-		print("MATCH")
+		print(line)
+		print(obj.groups())
 		var = obj.group(1)
-		var2 = obj.group(2)
-		op = obj.group(3)
-		func = obj.group(4)
-		var3 = obj.group(5)
-		print(var,var2,op,func,var3)
-		print(VARS[var][1],Funciones[func][0][2])
-		if VARS[var][1] == Funciones[func][0][2]:
-			print(var2,func,var3)
-			aux = exe_func(func,var3,VARS)
-			print(aux)
-			print(var,var2,func,var3,aux)
-			VARS[var][0] = operation(var2+" "+op+" "+aux[0]+";",VARS)
-			print(VARS)
-			return VARS
-		else:
-			print("Error de Tipo")
-			exit(1)
-	obj = op_func_iz.match(line)
-	if obj:
-		var = obj.group(1)
-		fun = obj.group(2)
-		var2 = obj.group(3)
-		op = obj.group(4)
-		var3 = obj.group(5)
-		if VARS[var][1] == Funciones[func][2]:
-			aux = exe_func(func,var2,VARS)
-			VARS[var][0] = operation(aux+op+var3,VARS)
-			return VARS
-		else:
-			print("Error de Tipo")
-			exit(1)
-	obj = op_func_do.match(line)
-	if obj:
-		var = obj.group(1)
-		fun1 = obj.group(2)
+		tipo = obj.group(2)
 		var1 = obj.group(3)
 		op = obj.group(4)
 		var2 = obj.group(5)
-		func2 = obj.group(6)
-		if VARS[var][1] == Funciones[func1][2]:
-			aux1 = exe_func(func1,var1,VARS)
-			aux2 = exe_func(func2,var2,VARS)
-			VARS[var][0] = operation(aux1+op+aux2,VARS)
-			return VARS
+		cast = obj.group(6)
+		if var1 in VARS.keys() and VARS[var1][1] == cast and cast == tipo:
+				VARS[var] = [operation(VARS[var1][0]+op+VARS[var2][0]+";",VARS),tipo]
+				return VARS
+		elif var2.isdigit() or isfloat(var2):
+			if cast == tipo:
+				VARS[var] = [operation(VARS[var1][0]+op+var2[0]+";",VARS),tipo]
+				return VARS
 		else:
 			print("Error de Tipo")
 			exit(1)
-	if line == "":
-		print("Linea en Blanco, pasando ...")
+
+	obj = var_func.match(line)
+	if obj:
+		var = obj.group(1)
+		tipo = obj.group(2)
+		func = obj.group(3)
+		var2 = obj.group(4)
+		VARS[var] = [exe_func(func,var2,VARS),tipo]
 		return VARS
-	print("no se encontro nada")
+
+	print("No Definido")
 	exit(1)
 
 """
