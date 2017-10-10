@@ -1498,24 +1498,24 @@ def main():
 	for line in fp:
 		line = line.strip("\n")
 		line = line.strip("\t")
-		print(line)
+		#print(line)
 		a = identifier(line)
 		if a == FN:
 			store_fun(line,fp)
-			print("Evaluando funcion")
+			#print("Evaluando funcion")
 		elif a == WHILE:
-			print("Evaluando while")
+			#print("Evaluando while")
 			lista = while_list(line,fp)
 			exe_while(lista,fp,DIC)
 		elif a == IF:
-			print("Evaluando if")
+			#print("Evaluando if")
 			DIC= if_exec(line,fp,DIC)
 		elif a == LET:
-			print("Declarando: ",line)
+			#print("Declarando: ",line)
 			DIC = declaration(line,DIC)
 			print(DIC)
 		elif a == SENT:
-			print("Sentenciando: ",line)
+			#print("Sentenciando: ",line)
 			DIC = sentence(line,DIC)
 		elif a == PRINT:
 			println(line,DIC)
