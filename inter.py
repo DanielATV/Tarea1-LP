@@ -323,7 +323,7 @@ def println(line,VARS):
 def store_fun(line,fp):
 	obj = func_main.match(line)
 	if obj:
-		return None
+		return Funciones
 	obj = func.match(line)
 	name_func = obj.group(1)
 	var_func = obj.group(2)
@@ -885,7 +885,7 @@ def declaration(line,VARS): # En Desarrollo
 		if var1 in VARS.keys() and VARS[var1][1] == cast and cast == tipo:
 				VARS[var] = [operation(VARS[var1][0]+op+VARS[var2][0]+";",VARS),tipo]
 				return VARS
-		elif var2.isdigit() or isfloat(var2):
+		elif var1.isdigit() or isfloat(var1):
 			if cast == tipo:
 				VARS[var] = [operation(var1+op+VARS[var2][0]+";",VARS),tipo]
 				return VARS
@@ -1193,6 +1193,9 @@ def isfloat(a):
 		return False
 
 def exe_func(nombre,val,VARS):
+	print("----------------------")
+	print("Ejeutando Funcion")
+	print("----------------------")
 	if tuple == type(VARS):
 		VARS = VARS[0]
 	lista = Funciones[nombre][1:]
@@ -1216,6 +1219,7 @@ def exe_func(nombre,val,VARS):
 			lista_while = while_list_static(line,lista)
 			VARS_Local,lista = exe_while_static(lista_while,lista,VARS_Local)
 		elif a == IF:
+			print("IF Estatico")
 			VARS_Local,lista = if_exec_static(line,lista,VARS_Local)
 		elif a == SENT:
 			VARS_Local = sentence(line,VARS_Local)
@@ -1225,13 +1229,14 @@ def exe_func(nombre,val,VARS):
 
 
 def ret_fun(line,tipo,VARS):
+	print("En Retorno")
 	obj = retorno_var_val.match(line)
 	if obj:
 		var = obj.group(1)
-		if var.isdigit():
+		if var.isdigit() or isfloat(var):
 			return var
 		else:
-			var = VARS[var]
+			var = VARS[var][0]
 			return var
 	obj = retorno_opsc.match(line)
 	if obj:
@@ -1246,10 +1251,10 @@ def ret_fun(line,tipo,VARS):
 	if obj:
 		return operation(line,VARS)
 
+
 def main():
 	fp = open("codigo_rust2.txt","r")
-	global ERROR
-	ERROR = print(fp)
+
 	i = 1
 	DIC = dict()
 	for line in fp:
