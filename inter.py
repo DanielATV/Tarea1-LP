@@ -887,7 +887,7 @@ def declaration(line,VARS): # En Desarrollo
 				return VARS
 		elif var2.isdigit() or isfloat(var2):
 			if cast == tipo:
-				VARS[var] = [operation(VARS[var1][0]+op+var2[0]+";",VARS),tipo]
+				VARS[var] = [operation(var1+op+VARS[var2][0]+";",VARS),tipo]
 				return VARS
 		else:
 			print("Error de Tipo")
