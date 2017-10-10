@@ -1440,9 +1440,7 @@ Outputs:
 """
 def main():
 	fp = open("codigo_rust2.txt","r")
-	global ERROR
-	ERROR = print(fp)
-	i = 1
+	
 	DIC = dict()
 	for line in fp:
 		line = line.strip("\n")
