@@ -377,8 +377,10 @@ Outputs:
 def println(line,VARS):
 	obj = print_ln.match(line)
 	var = obj.group(1)
+	valor = get_val_value(var,VARS)
 	type_var = VARS[var][1]
-	print("El valor es: "+var+". Su tipo es: "+type_var)
+	print("El valor es: "+str(valor)+". Su tipo es: "+type_var)
+
 
 """
 store_fun(line,fp): Guarda las funciones en un diccionario.
